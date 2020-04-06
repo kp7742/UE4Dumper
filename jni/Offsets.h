@@ -7,7 +7,7 @@ namespace Offsets {
 	kaddr GNames = 0;
 	kaddr GUObjectArray = 0;
     enum Offsets {
-        //Global
+		//Global
 		PointerSize = 0x4,
 		TUObjectArraySize = 0x10,
 
@@ -29,11 +29,11 @@ namespace Offsets {
 		//Class: UProperty
 		UPropertyToElementSize = 0x24,
 		UPropertyToOffsetInternal = 0x34,
-        //Class: UBoolProperty
-        UBoolPropertyToFieldSize = 0x50,
-        UBoolPropertyToByteOffset = 0x51,
-        UBoolPropertyToByteMask = 0x52,
-        UBoolPropertyToFieldMask = 0x53,
+		//Class: UBoolProperty
+		UBoolPropertyToFieldSize = 0x50,
+		UBoolPropertyToByteOffset = 0x51,
+		UBoolPropertyToByteMask = 0x52,
+		UBoolPropertyToFieldMask = 0x53,
 		//Class: UObjectProperty
 		UObjectPropertyToPropertyClass = 0x50,
 		//Class: UClassProperty
@@ -48,7 +48,7 @@ namespace Offsets {
 		//Class: USetProperty
 		USetPropertyToElementProp = 0x50,
 		//Class: UStructProperty
-        UStructPropertyToStruct = 0x50,
+		UStructPropertyToStruct = 0x50,
     };
 }
 

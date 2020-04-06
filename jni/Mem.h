@@ -150,9 +150,17 @@ void HexDump(kaddr addr, int lines){
 	printf("\n\t\t:Hex Dump:\n\n");
 	int ptr=0;
 	for(int i=0;i<lines;i++) {
+#if defined(__LP64__)
+		printf("0x%04lx: ", addr + (i*8));
+#else
 		printf("0x%04x: ", addr + (i*8));
+#endif
 		for (int j = 0; j < 8; j++) {
+#if defined(__LP64__)
+			printf("0x%02hhx ", Read<char>(addr + ptr++));
+#else
 			printf("0x%02x ", Read<char>(addr + ptr++));
+#endif
 		}
 		printf("\n");
 	}

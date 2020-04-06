@@ -8,7 +8,6 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 - Fix and Regenerate So(Elf) File
 - Dumping of Game Structure SDK file(Need to Find GNames and GUObject Address Manually)
 - Support Fast Dumping(May Miss some data)
-- Support Only 32bit Games Right now
 - Tested on PUBG Mobile and PUBG Mobile Lite
 
 ## Note
@@ -23,7 +22,7 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 	```
 	 ./ue4dumper -h
 	 
-	 UE4Dumper v0.1 <==> Made By KMODs(kp7742)
+	 UE4Dumper v0.2 <==> Made By KMODs(kp7742)
 	 Usage: ue4dumper <option(s)>
 	 Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK
 	 Tested on PUBG Mobile and PUBG Mobile Lite
