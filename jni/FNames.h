@@ -1,0 +1,43 @@
+#ifndef FNAMES_H
+#define FNAMES_H
+
+using namespace std;
+
+uint32 GNameCount = 170000;
+
+string getUEString(kaddr address) {
+    unsigned int MAX_SIZE = 100;
+
+    string uestring(ReadStr(address, MAX_SIZE));
+    uestring.shrink_to_fit();
+
+    return uestring;
+}
+
+string GetFNameFromID(uint32 index) {
+    kaddr TNameEntryArray = getPtr(getRealOffset(Offsets::GNames));
+
+	kaddr FNameEntryArr = getPtr(TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
+	kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
+
+	return getUEString(FNameEntry + Offsets::FNameEntryToNameString);
+}
+
+void DumpStrings(string out) {
+	uint32 count = 0;
+	ofstream gname(out + "/Strings.txt", ofstream::out);
+	if (gname.is_open()) {
+		cout << "Dumping Strings" << endl;
+		for (uint32 i = 0; i < GNameCount; i++) {
+			string s = GetFNameFromID(i);
+			if(!s.empty()) {
+				gname << "[" << i << "]: " << s << endl;
+				count++;
+			}
+		}
+		gname.close();
+		cout << count << " Strings Dumped" << endl;
+	}
+}
+
+#endif
