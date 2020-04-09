@@ -6,7 +6,7 @@
 
 using namespace std;
 
-uint32 GUObjectCount = 600000;
+uint32 GUObjectCount = 300000;
 
 UObject GetUObjectFromID(uint32 index) {
 	kaddr FUObjectArray = getPtr(getRealOffset(Offsets::GUObjectArray));

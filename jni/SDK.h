@@ -20,12 +20,96 @@ bool isMapped(uint32 data) {
 
 void writeStructs(ofstream& sdk, kaddr clazz);
 
+string resolveInnerProp(list<kaddr>& recurrce, kaddr prop){
+    if(prop){
+        UProperty innerprop(prop);
+        UClass innerclass(innerprop.ClassPrivate);
+
+        string cname = innerclass.getClassName();
+
+        if (isEqual(cname, "ObjectProperty") || isEqual(cname, "WeakObjectProperty") || isEqual(cname, "LazyObjectProperty")
+            || isEqual(cname, "AssetObjectProperty") || isEqual(cname, "SoftObjectProperty")) {
+            UObjectProperty objectProp(prop);
+            UClass propertyClass(objectProp.PropertyClass);
+            recurrce.push_back(propertyClass.ptr);
+            return propertyClass.getName();
+        }
+        else if (isEqual(cname, "ClassProperty") || isEqual(cname, "AssetClassProperty") || isEqual(cname, "SoftClassProperty")) {
+            UClassProperty classProp(prop);
+            UClass metaClass(classProp.MetaClass);
+            recurrce.push_back(metaClass.ptr);
+            return "class " + metaClass.getName();
+        }
+        else if (isEqual(cname, "StructProperty")) {
+            UStructProperty structProp(prop);
+            UStruct Struct(structProp.Struct);
+            recurrce.push_back(Struct.ptr);
+            return Struct.getName();
+        }
+        else if (isEqual(cname, "BoolProperty")) {
+            return "bool";
+        }
+        else if (isEqual(cname, "ByteProperty")) {
+            return "byte";
+        }
+        else if (isEqual(cname, "IntProperty")) {
+            return "int";
+        }
+        else if (isEqual(cname, "Int8Property")) {
+            return "int8";
+        }
+        else if (isEqual(cname, "Int16Property")) {
+            return "int16";
+        }
+        else if (isEqual(cname, "Int64Property")) {
+            return "int64";
+        }
+        else if (isEqual(cname, "UInt16Property")) {
+            return "uint16";
+        }
+        else if (isEqual(cname, "UInt32Property")) {
+            return "uint32";
+        }
+        else if (isEqual(cname, "UInt64Property")) {
+            return "uint64";
+        }
+        else if (isEqual(cname, "DoubleProperty")) {
+            return "double";
+        }
+        else if (isEqual(cname, "FloatProperty")) {
+            return "float";
+        }
+        else if (isEqual(cname, "EnumProperty")) {
+            return "enum";
+        }
+        else if (isEqual(cname, "StrProperty")) {
+            return "FString";
+        }
+        else if (isEqual(cname, "TextProperty")) {
+            return "FText";
+        }
+        else if (isEqual(cname, "NameProperty")) {
+            return "FName";
+        }
+        else if (isEqual(cname, "DelegateProperty") || isEqual(cname, "MulticastDelegateProperty")) {
+            return "delegate";
+        }
+        else {
+            return innerprop.getName() + "(" + innerclass.getName() + ")";
+        }
+    }
+    return "NULL";
+}
+
+//---------------------------------------------------------------------------------------------------------------------------//
+
 list<kaddr> writeStructChildrens(ofstream& sdk, kaddr childprop) {
-	list<kaddr> recurrce;
+    list<kaddr> recurrce;
 	kaddr child = childprop;
 	while (child) {
 		UField field(child);
 		UClass fclass(field.ClassPrivate);
+
 		string oname = field.getName();
 		string cname = fclass.getClassName();
 
@@ -73,29 +157,21 @@ list<kaddr> writeStructChildrens(ofstream& sdk, kaddr childprop) {
 		}
 		else if (isEqual(cname, "ArrayProperty")) {
 			UArrayProperty arrProp(child);
-			UProperty innerprop(arrProp.Inner);
-			UClass innerclass(innerprop.ClassPrivate);
 
-			sdk << "\t" << innerprop.getName() << "(" << innerclass.getName() << ")[] " << oname << ";";
+            sdk << "\t" << resolveInnerProp(recurrce, arrProp.Inner) <<"[] " << oname << ";";
 			sdk << "//[Offset: 0x" << setbase(16) << arrProp.Offset << " , " << "Size: " << setbase(10) << arrProp.ElementSize << "]" << endl;
 		}
 		else if (isEqual(cname, "SetProperty")) {
 			USetProperty setProp(child);
-			UProperty innerprop(setProp.ElementProp);
-			UClass innerclass(innerprop.ClassPrivate);
 
-			sdk << "\t<" << innerprop.getName() << "(" << innerclass.getName() << ")> " << oname << ";";
+			sdk << "\t<" << resolveInnerProp(recurrce, setProp.ElementProp) << "> " << oname << ";";
 			sdk << "//[Offset: 0x" << setbase(16) << setProp.Offset << " , " << "Size: " << setbase(10) << setProp.ElementSize << "]" << endl;
 		}
 		else if (isEqual(cname, "MapProperty")) {
 			UMapProperty mapProp(child);
-			UProperty kprop(mapProp.KeyProp);
-			UClass kclass(kprop.ClassPrivate);
-			UProperty vprop(mapProp.ValueProp);
-			UClass vclass(vprop.ClassPrivate);
 
-			sdk << "\t<" << kprop.getName() << "(" << kclass.getName() << ") , ";
-			sdk << vprop.getName() << "(" << vclass.getName() << ")> " << oname << ";";
+			sdk << "\t<" << resolveInnerProp(recurrce, mapProp.KeyProp) << ",";
+			sdk << resolveInnerProp(recurrce, mapProp.ValueProp) << "> " << oname << ";";
 			sdk << "//[Offset: 0x" << setbase(16) << mapProp.Offset << " , " << "Size: " << setbase(10) << mapProp.ElementSize << "]" << endl;
 		}
 		else if (isEqual(cname, "BoolProperty")) {

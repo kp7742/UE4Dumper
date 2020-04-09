@@ -1,6 +1,11 @@
 ## UE4Dumper(Unreal Engine 4 Dumper)
 Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Supported Game
 
+## Changelog
+- v0.1: First Release
+- v0.2: Experimental 64bit Support Added
+- v0.3: Fix Object Iteration Issue during Dumping SDK, Added Support to Resolve Arrays, Sets and Maps Structure
+
 ## Features
 - No need of Ptrace
 - Bypass Anti Debugging
@@ -11,6 +16,7 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 - Tested on PUBG Mobile and PUBG Mobile Lite
 
 ## Note
+- Recommend to use in Training Mode for PUBG Mobile
 - If it stuck during Generating SDK, Then Simple Stop it and Try again.
  
 ## How to use
@@ -22,7 +28,7 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 	```
 	 ./ue4dumper -h
 	 
-	 UE4Dumper v0.2 <==> Made By KMODs(kp7742)
+	 UE4Dumper v0.3 <==> Made By KMODs(kp7742)
 	 Usage: ue4dumper <option(s)>
 	 Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK
 	 Tested on PUBG Mobile and PUBG Mobile Lite
