@@ -9,6 +9,7 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
         2) Fixed 64bit Library Rebuilding Not Working
         3) Added New Elf Dump Fix for 64bit Library
         4) Added Option to Dump SDK with GWorld
+		5) Updated Usage Text.
 
 ## Features
 - No need of Ptrace
@@ -17,7 +18,7 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 - Fix and Regenerate So(Elf) File from Dump
 - Dumping of Game Structure SDK file(Need to Find Pointers Manually)
 - Support Fast Dumping(May Miss some data)
-- Support Any UE 4.18 Game
+- Support SDK Dumping for UE 4.18 Based Games
 - Tested on 32bit PUBG Mobile Series
 
 ## Note
