@@ -7,16 +7,16 @@
 using namespace std;
 
 // Unsigned base types.
-typedef unsigned char 		uint8;
+typedef unsigned char uint8;
 typedef unsigned short int	uint16;
-typedef unsigned int		uint32;
+typedef unsigned int uint32;
 typedef unsigned long long	uint64;
 
 // Signed base types.
-typedef	signed char			int8;
-typedef signed short int	int16;
-typedef signed int	 		int32;
-typedef signed long long	int64;
+typedef	signed char	int8;
+typedef signed short int int16;
+typedef signed int	int32;
+typedef signed long long int64;
 
 typedef uintptr_t kaddr;
 
@@ -164,6 +164,74 @@ void HexDump(kaddr addr, int lines){
 		}
 		printf("\n");
 	}
+}
+
+void HexDump1B(kaddr addr, int lines){
+	printf("\n\t\t:Hex Dump:\n\n");
+	int ptr=0;
+	for(int i=0;i<lines;i++) {
+		uint8 data1 = Read<uint8>(addr + ptr);
+		ptr++;
+		uint8 data2 = Read<uint8>(addr + ptr);
+		ptr++;
+		uint8 data3 = Read<uint8>(addr + ptr);
+		ptr++;
+		uint8 data4 = Read<uint8>(addr + ptr);
+		ptr++;
+		uint8 data5 = Read<uint8>(addr + ptr);
+		ptr++;
+		uint8 data6 = Read<uint8>(addr + ptr);
+		ptr++;
+		uint8 data7 = Read<uint8>(addr + ptr);
+		ptr++;
+		uint8 data8 = Read<uint8>(addr + ptr);
+		ptr++;
+#if defined(__LP64__)
+		printf("(%d) 0x%04lx: 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx", i+1, addr + (i*8), data1, data2, data3, data4,
+			 data5, data6, data7, data8);
+#else
+		printf("(%d) 0x%04x: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x", i+1, addr + (i*8), data1, data2, data3, data4,
+			   data5, data6, data7, data8);
+#endif
+		printf("\n");
+	}
+	printf("\n");
+}
+
+void HexDump4B(kaddr addr, int lines){
+	printf("\n\t\t:Hex Dump:\n\n");
+	int ptr=0;
+	for(int i=0;i<lines;i++) {
+		uint32 data1 = Read<uint32>(addr + ptr);
+		ptr += 4;
+		uint32 data2 = Read<uint32>(addr + ptr);
+		ptr += 4;
+#if defined(__LP64__)
+		printf("(%d) 0x%lx: 0x%04x 0x%04x", i+1, addr + (i*8), data1, data2);
+#else
+		printf("(%d) 0x%x: 0x%04x 0x%04x", i+1, addr + (i*8), data1, data2);
+#endif
+		printf("\n");
+	}
+	printf("\n");
+}
+
+void HexDump8B(kaddr addr, int lines){
+	printf("\n\t\t:Hex Dump:\n\n");
+	int ptr=0;
+	for(int i=0;i<lines;i++) {
+		uint64 data1 = Read<uint64>(addr + ptr);
+		ptr += 8;
+		uint64 data2 = Read<uint64>(addr + ptr);
+		ptr += 8;
+#if defined(__LP64__)
+		printf("(%d) 0x%lx: 0x%llx 0x%llx", i+1, addr + (i*8), data1, data2);
+#else
+		printf("(%d) 0x%x: 0x%llx 0x%llx", i+1, addr + (i*8), data1, data2);
+#endif
+		printf("\n");
+	}
+	printf("\n");
 }
 
 #endif //MEMORY_H

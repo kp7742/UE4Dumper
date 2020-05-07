@@ -11,9 +11,9 @@ uint32 GUObjectCount = 300000;
 UObject GetUObjectFromID(uint32 index) {
 	kaddr FUObjectArray = getPtr(getRealOffset(Offsets::GUObjectArray));
 	kaddr TUObjectArray = getPtr(FUObjectArray + Offsets::FUObjectArrayToTUObjectArray);
-	kaddr TUObjectItem = getPtr(TUObjectArray + (index * Offsets::TUObjectArraySize));
+	kaddr FUObjectItem = getPtr(TUObjectArray + (index * Offsets::FUObjectItemSize));
 
-	return UObject(TUObjectItem);
+	return UObject(FUObjectItem);
 }
 
 void DumpObjects(string out) {

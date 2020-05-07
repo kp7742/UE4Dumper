@@ -327,8 +327,36 @@ void DumpSDK(string out) {
 	}
 }
 
-void TestRun(){
-	UObject uobj = GetUObjectFromID(3);
+void TestDump(UObject uobj);
+
+void DumpSDK2(string out) {
+	ofstream sdk(out + "/SDK.txt", ofstream::out);
+	if (sdk.is_open()) {
+		cout << "Dumping SDK List" << endl;
+		clock_t begin = clock();
+		UObject gworld = UObject(getPtr(getRealOffset(Offsets::GWorld)));
+		if (gworld.ptr) {
+			//Iterate World
+			writeStructs(sdk, gworld.ClassPrivate);
+			//Iterate Entity
+			kaddr level = getPtr(gworld.ptr + Offsets::UWorldToPersistentLevel);
+			kaddr actorList = getPtr(level + Offsets::ULevelToAActors);
+			int actorsCount = Read<int>(level + Offsets::ULevelToAActorsCount);
+			for (int i = 0; i < actorsCount; i++) {
+				UObject actor = UObject(getPtr(actorList + (i * sizeof(kaddr))));
+				if (actor.ptr) {
+					writeStructs(sdk, actor.ClassPrivate);
+				}
+			}
+		}
+		sdk.close();
+		clock_t end = clock();
+		double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+		cout << objcount << " Items Dumped in SDK in " << elapsed_secs << "S" << endl;
+	}
+}
+
+void TestDump(UObject uobj){
 	cout << "Name: " << uobj.getName() << endl;
 	cout << "ObjectPtr: " << setbase(16) << uobj.ptr << endl;
 	cout << "ClassPtr: " << setbase(16) << uobj.ClassPrivate << "\n" << endl;

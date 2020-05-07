@@ -3,7 +3,7 @@
 
 using namespace std;
 
-const char* short_options = "hlrfnsep:o:g:u:";
+const char* short_options = "hlrfnsabp:o:g:u:w:";
 const struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"lib", no_argument, NULL, 'l'},
@@ -13,29 +13,40 @@ const struct option long_options[] = {
 		{"output", required_argument, NULL, 'o'},
 		{"gname", required_argument, NULL, 'g'},
 		{"guobj", required_argument, NULL, 'u'},
+		{"gworld", required_argument, NULL, 'w'},
 		{"objs", no_argument, NULL, 'n'},
 		{"strings", no_argument, NULL, 's'},
-		{"sdk", no_argument, NULL, 'e'},
+		{"sdku", no_argument, NULL, 'a'},
+		{"sdkw", no_argument, NULL, 'b'},
 		{NULL, 0, NULL, 0}
 };
 
 void Usage() {
-	printf("UE4Dumper v0.3 <==> Made By KMODs(kp7742)\n");
+	printf("UE4Dumper v0.4 <==> Made By KMODs(kp7742)\n");
 	printf("Usage: ue4dumper <option(s)>\n");
-	printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK\n");
-	printf("Tested on PUBG Mobile and PUBG Mobile Lite\n");
+	printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE 4.18\n");
+	printf("Tested on PUBG Mobile Series\n");
 	printf(" Options:\n");
-	printf("--Utils Dump Args-----------------------------------------------------------------------\n");
+    printf("--SDK Dump With GObjectArray Args--------------------------------------------------------\n");
+    printf("  -a --sdku                             Dump SDK with GUObject\n");
+    printf("  -g --gname <address>                  GNames Pointer Address\n");
+    printf("  -u --guobj <address>                  GUObject Pointer Address\n");
+    printf("--SDK Dump With GWorld Args--------------------------------------------------------------\n");
+    printf("  -b --sdkw                             Dump SDK with GWorld\n");
+    printf("  -g --gname <address>                  GNames Pointer Address\n");
+    printf("  -w --gworld <address>                 GWorld Pointer Address\n");
+    printf("--Dump Strings Args----------------------------------------------------------------------\n");
+    printf("  -s --strings                          Dump Strings\n");
+    printf("  -g --gname <address>                  GNames Pointer Address\n");
+    printf("--Dump Objects Args----------------------------------------------------------------------\n");
+    printf("  -n --objs                             Dumping Object List\n");
 	printf("  -g --gname <address>                  GNames Pointer Address\n");
 	printf("  -u --guobj <address>                  GUObject Pointer Address\n");
-	printf("  -n --objs                             Dumping Object List\n");
-	printf("  -s --strings                          Dump Strings\n");
-	printf("  -e --sdk                              Dump SDK\n");
-	printf("--Lib Dump Args-------------------------------------------------------------------------\n");
+	printf("--Lib Dump Args--------------------------------------------------------------------------\n");
 	printf("  -l --lib                              Dump libUE4.so from Memory\n");
 	printf("  -r --raw(Optional)                    Output Raw Lib and Not Rebuild It\n");
 	printf("  -f --fast(Optional)                   Enable Fast Dumping(May Miss Some Bytes in Dump)\n");
-	printf("--Other Args----------------------------------------------------------------------------\n");
+	printf("--Other Args-----------------------------------------------------------------------------\n");
 	printf("  -p --package <packageName>            Package Name of App(Default: com.tencent.ig)\n");
 	printf("  -o --output <outputPath>              File Output path(Default: /sdcard)\n");
 	printf("  -h --help                             Display this information\n");
@@ -72,7 +83,8 @@ int main(int argc, char *argv[]) {
 	isRawDump = false,
 	isObjsDump = false,
 	isStrDump = false,
-	isSdkDump = false;
+	isSdkDump = false,
+	isSdkDump2 = false;
 
 	while((c = getopt_long(argc, argv, short_options, long_options, nullptr)) != -1) {
 		switch (c) {
@@ -97,14 +109,20 @@ int main(int argc, char *argv[]) {
 			case 'u':
 				Offsets::GUObjectArray = getHexAddr(optarg);
 				break;
+			case 'w':
+				Offsets::GWorld = getHexAddr(optarg);
+				break;
 			case 'n':
 				isObjsDump = true;
 				break;
 			case 's':
 				isStrDump = true;
 				break;
-			case 'e':
+			case 'a':
 				isSdkDump = true;
+				break;
+			case 'b':
+				isSdkDump2 = true;
 				break;
 			default:
 				isValidArg = false;
@@ -112,14 +130,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if(!isValidArg || (!isLibDump && !isObjsDump && !isStrDump && !isSdkDump)) {
+	if(!isValidArg || (!isLibDump && !isObjsDump && !isStrDump && !isSdkDump && !isSdkDump2)) {
 		printf("Wrong Arguments, Please Check!!\n");
-		Usage();
-		return -1;
-	}
-
-	if(Offsets::GNames < 1 || Offsets::GUObjectArray < 1){
-		printf("Please Enter Correct GName and GUObject Addresses!!\n");
 		Usage();
 		return -1;
 	}
@@ -176,7 +188,6 @@ int main(int argc, char *argv[]) {
 			}
 			rdump.close();
 		} else {
-			ElfReader elf_reader;
 			string tempPath = outputpath + "/KTemp.dat";
 
 			ofstream ldump(tempPath, ofstream::out | ofstream::binary);
@@ -202,6 +213,13 @@ int main(int argc, char *argv[]) {
 
 			//SoFixer Code//
             cout << "Rebuilding Elf(So)" << endl;
+
+#if defined(__LP64__)
+			string outPath = outputpath + "/" + lib_name;
+
+			fix_so(tempPath.c_str(), outPath.c_str(), start_addr);
+#else
+			ElfReader elf_reader;
 
 			elf_reader.setDumpSoFile(true);
 			elf_reader.setDumpSoBaseAddr(start_addr);
@@ -235,22 +253,48 @@ int main(int argc, char *argv[]) {
 				cout << "Can't Output File" << endl;
 				return -1;
 			}
-
-			remove(tempPath.c_str());
 			redump.close();
+#endif
+
+			cout << "Rebuilding Complete" << endl;
+			remove(tempPath.c_str());
 		}
 	}
 
 	if(isStrDump) {
+		if(Offsets::GNames < 1){
+			printf("Please Enter Correct GName Addresses!!\n");
+			Usage();
+			return -1;
+		}
 		DumpStrings(outputpath);
 		cout << endl;
 	}
 	if(isObjsDump) {
+		if(Offsets::GUObjectArray < 1){
+			printf("Please Enter Correct GUObject Addresses!!\n");
+			Usage();
+			return -1;
+		}
 		DumpObjects(outputpath);
 		cout << endl;
 	}
 	if(isSdkDump) {
+		if(Offsets::GNames < 1 || Offsets::GUObjectArray < 1){
+			printf("Please Enter Correct GName and GUObject Addresses!!\n");
+			Usage();
+			return -1;
+		}
 		DumpSDK(outputpath);
+		cout << endl;
+	}
+	if(isSdkDump2) {
+		if(Offsets::GNames < 1 || Offsets::GWorld < 1){
+			printf("Please Enter Correct GName and GWorld Addresses!!\n");
+			Usage();
+			return -1;
+		}
+		DumpSDK2(outputpath);
 		cout << endl;
 	}
 	return 0;

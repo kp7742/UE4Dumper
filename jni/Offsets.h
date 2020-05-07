@@ -4,12 +4,14 @@
 #include "Mem.h"
 
 namespace Offsets {
+	kaddr GWorld = 0;
 	kaddr GNames = 0;
 	kaddr GUObjectArray = 0;
-    enum Offsets {
+
+	enum Offsets {
 		//Global
 		PointerSize = 0x4,
-		TUObjectArraySize = 0x10,
+		FUObjectItemSize = 0x10,
 
 		//---------SDK-----------
 		//Class: FNameEntry
@@ -49,7 +51,12 @@ namespace Offsets {
 		USetPropertyToElementProp = 0x50,
 		//Class: UStructProperty
 		UStructPropertyToStruct = 0x50,
-    };
+		//Class: UWorld
+		UWorldToPersistentLevel = 0x20,
+		//Class: ULevel
+		ULevelToAActors = 0x70,
+		ULevelToAActorsCount = 0x74,
+	};
 }
 
 #endif

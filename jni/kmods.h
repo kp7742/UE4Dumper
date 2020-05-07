@@ -20,8 +20,13 @@
 #include "Offsets.h"
 #include "Process.h"
 #include "Mem.h"
+
+#if defined(__LP64__)
+#include "ELF64/fix.h"
+#else
 #include "ELF/ElfReader.h"
 #include "ELF/ElfRebuilder.h"
+#endif
 
 static const char* lib_name = "libUE4.so";
 
