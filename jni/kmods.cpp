@@ -22,7 +22,7 @@ const struct option long_options[] = {
 };
 
 void Usage() {
-	printf("UE4Dumper v0.4 <==> Made By KMODs(kp7742)\n");
+	printf("UE4Dumper v0.5 <==> Made By KMODs(kp7742)\n");
 	printf("Usage: ue4dumper <option(s)>\n");
 	printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE 4.18\n");
 	printf("Tested on PUBG Mobile Series\n");

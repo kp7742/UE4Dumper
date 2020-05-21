@@ -27,9 +27,11 @@ namespace Offsets {
 		UStructToSuperStruct = 0x20,
 		UStructToChildren = 0x24,
 		//Class: UFunction
+		UFunctionToFunctionFlags = 0x58,
 		UFunctionToFunc = 0x74,
 		//Class: UProperty
 		UPropertyToElementSize = 0x24,
+        UPropertyToPropertyFlags = 0x28,
 		UPropertyToOffsetInternal = 0x34,
 		//Class: UBoolProperty
 		UBoolPropertyToFieldSize = 0x50,

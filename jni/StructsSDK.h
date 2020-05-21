@@ -83,13 +83,27 @@ struct UClass : UStruct {
 	UClass(kaddr address) : UStruct(address) {}
 };
 
+struct UFunction : UStruct {
+    int32 FunctionFlags;
+    kaddr Func;
+
+    UFunction(kaddr address) : UStruct(address) {
+        if (isValid()) {
+            FunctionFlags = Read<int32>(address + Offsets::UFunctionToFunctionFlags);
+            Func = getPtr(address + Offsets::UFunctionToFunc);
+        }
+    }
+};
+
 struct UProperty : UField {
 	int32 ElementSize;
+    uint64 PropertyFlags;
 	int32 Offset;
 
 	UProperty(kaddr address) : UField(address) {
 		if (isValid()) {
 			ElementSize = Read<int32>(address + Offsets::UPropertyToElementSize);
+            PropertyFlags = Read<uint64>(address + Offsets::UPropertyToPropertyFlags);
 			Offset = Read<int32>(address + Offsets::UPropertyToOffsetInternal);
 		}
 	}
@@ -183,16 +197,6 @@ struct UStructProperty : UProperty {
 	UStructProperty(kaddr address) : UProperty(address) {
 		if (isValid()) {
 			Struct = getPtr(address + Offsets::UStructPropertyToStruct);
-		}
-	}
-};
-
-struct UFunction : UStruct {
-	kaddr Func;
-
-	UFunction(kaddr address) : UStruct(address) {
-		if (isValid()) {
-			Func = getPtr(address + Offsets::UFunctionToFunc);
 		}
 	}
 };
