@@ -7,197 +7,166 @@ using namespace std;
 
 //--------------SDK-----------------//
 
-struct Base {
-	kaddr ptr;
-
-	Base(kaddr address) {
-		if (address) {
-			ptr = address;
-		}
+struct UObject {
+	static int32 getIndex(kaddr object){
+		return Read<int32>(object + Offsets::UObjectToInternalIndex);
 	}
 
-	bool isValid(){
-		return ptr > 0;
+	static kaddr getClass(kaddr object){//UClass*
+		return getPtr(object + Offsets::UObjectToClassPrivate);
+	}
+
+	static uint32 getNameID(kaddr object){
+		return Read<uint32>(object + Offsets::UObjectToFNameIndex);
+	}
+
+	static kaddr getOuter(kaddr object){//UObject*
+		return getPtr(object + Offsets::UObjectToOuterPrivate);
+	}
+
+	static string getName(kaddr object) {
+		return GetFNameFromID(getNameID(object));
+	}
+
+    static string getClassPath(kaddr object) {
+        kaddr clazz = UObject::getClass(object);
+        string classname = UObject::getName(clazz);
+
+        kaddr superclass = getPtr(clazz + Offsets::UStructToSuperStruct);
+        while (superclass) {
+            classname += ".";
+            classname += UObject::getName(superclass);
+
+            superclass = getPtr(clazz + Offsets::UStructToSuperStruct);
+        }
+
+        return classname;
+    }
+
+	static bool isValid(kaddr object){
+		return (object != 0 && getIndex(object) != 0 && getClass(object) != 0);
 	}
 };
 
-struct UObject : Base {
-	kaddr ClassPrivate;
-	uint32 FNameID;
-
-	UObject(kaddr address) : Base(address) {
-		if (isValid()) {
-			ClassPrivate = getPtr(address + Offsets::UObjectToClassPrivate);
-			FNameID = Read<uint32>(address + Offsets::UObjectToFNameindex);
-		}
-	}
-
-	string getName() {
-		return GetFNameFromID(FNameID);
+struct UField {
+	static kaddr getNext(kaddr field){//UField*
+		return getPtr(field + Offsets::UFieldToNext);
 	}
 };
 
-struct UField : UObject {
-	kaddr Next;//UField*
-
-	UField(kaddr address) : UObject(address){
-		if (isValid()) {
-			Next = getPtr(address + Offsets::UFieldToNext);
-		}
-	}
-};
-
-struct UStruct : UField {
-	kaddr SuperStruct;//UStruct*
-	kaddr Children;//UField*
-
-	UStruct(kaddr address) : UField(address) {
-		if (isValid()) {
-			SuperStruct = getPtr(address + Offsets::UStructToSuperStruct);
-			Children = getPtr(address + Offsets::UStructToChildren);
-		}
+struct UStruct {
+	static kaddr getSuperClass(kaddr structz){//UStruct*
+		return getPtr(structz + Offsets::UStructToSuperStruct);
 	}
 
-	string getClassName() {
-		return getName();
+	static kaddr getChildren(kaddr structz){//UField*
+		return getPtr(structz + Offsets::UStructToChildren);
 	}
 
-	string getClassPath() {
-		string classname = getName();
+	static string getClassName(kaddr object) {
+		return UObject::getName(UObject::getClass(object));
+	}
 
-		kaddr superclass = SuperStruct;
+	static string getClassPath(kaddr clazz) {
+		string classname = UObject::getName(clazz);
+
+		kaddr superclass = getSuperClass(clazz);
 		while (superclass) {
-			UStruct clazz(superclass);
-
 			classname += ".";
-			classname += clazz.getName();
-			
-			superclass = clazz.SuperStruct;
+			classname += UObject::getName(superclass);
+
+			superclass = getSuperClass(superclass);
 		}
 
 		return classname;
 	}
 };
 
-struct UClass : UStruct {
-	UClass(kaddr address) : UStruct(address) {}
-};
+struct UFunction {
+	static int32 getFunctionFlags(kaddr func){
+		return Read<int32>(func + Offsets::UFunctionToFunctionFlags);
+	}
 
-struct UFunction : UStruct {
-    int32 FunctionFlags;
-    kaddr Func;
-
-    UFunction(kaddr address) : UStruct(address) {
-        if (isValid()) {
-            FunctionFlags = Read<int32>(address + Offsets::UFunctionToFunctionFlags);
-            Func = getPtr(address + Offsets::UFunctionToFunc);
-        }
-    }
-};
-
-struct UProperty : UField {
-	int32 ElementSize;
-    uint64 PropertyFlags;
-	int32 Offset;
-
-	UProperty(kaddr address) : UField(address) {
-		if (isValid()) {
-			ElementSize = Read<int32>(address + Offsets::UPropertyToElementSize);
-            PropertyFlags = Read<uint64>(address + Offsets::UPropertyToPropertyFlags);
-			Offset = Read<int32>(address + Offsets::UPropertyToOffsetInternal);
-		}
+	static kaddr getFunc(kaddr func){
+		return getPtr(func + Offsets::UFunctionToFunc);
 	}
 };
 
-struct UBoolProperty : UProperty {
-	/** Size of the bitfield/bool property. Equal to ElementSize but used to check if the property has been properly initialized (0-8, where 0 means uninitialized). */
-	uint8 FieldSize;
-	/** Offset from the memeber variable to the byte of the property (0-7). */
-	uint8 ByteOffset;
-	/** Mask of the byte byte with the property value. */
-	uint8 ByteMask;
-	/** Mask of the field with the property value. Either equal to ByteMask or 255 in case of 'bool' type. */
-	uint8 FieldMask;
+struct UProperty {
+	static int32 getElementSize(kaddr prop){
+		return Read<int32>(prop + Offsets::UPropertyToElementSize);
+	}
 
-	UBoolProperty(kaddr address) : UProperty(address) {
-		if (isValid()) {
-			FieldSize = Read<uint8>(address + Offsets::UBoolPropertyToFieldSize);
-			ByteOffset = Read<uint8>(address + Offsets::UBoolPropertyToByteOffset);
-			ByteMask = Read<uint8>(address + Offsets::UBoolPropertyToByteMask);
-			FieldMask = Read<uint8>(address + Offsets::UBoolPropertyToFieldMask);
-		}
+	static uint64 getPropertyFlags(kaddr prop){
+		return Read<uint64>(prop + Offsets::UPropertyToPropertyFlags);
+	}
+
+	static int32 getOffset(kaddr prop){
+		return Read<int32>(prop + Offsets::UPropertyToOffsetInternal);
 	}
 };
 
-struct UObjectProperty : UProperty {
-	kaddr PropertyClass;//class UClass*
+struct UBoolProperty {
+	static uint8 getFieldSize(kaddr prop){
+		return Read<uint8>(prop + Offsets::UBoolPropertyToFieldSize);
+	}
 
-	UObjectProperty(kaddr address) : UProperty(address) {
-		if (isValid()) {
-			PropertyClass = getPtr(address + Offsets::UObjectPropertyToPropertyClass);
-		}
+	static uint8 getByteOffset(kaddr prop){
+		return Read<uint8>(prop + Offsets::UBoolPropertyToByteOffset);
+	}
+
+	static uint8 getByteMask(kaddr prop){
+		return Read<uint8>(prop + Offsets::UBoolPropertyToByteMask);
+	}
+
+	static uint8 getFieldMask(kaddr prop){
+		return Read<uint8>(prop + Offsets::UBoolPropertyToFieldMask);
 	}
 };
 
-struct UClassProperty : UProperty {
-	kaddr MetaClass;//class UClass*
-
-	UClassProperty(kaddr address) : UProperty(address) {
-		if (isValid()) {
-			MetaClass = getPtr(address + Offsets::UClassPropertyToMetaClass);
-		}
+struct UObjectProperty {
+	static kaddr getPropertyClass(kaddr prop){//class UClass*
+		return getPtr(prop + Offsets::UObjectPropertyToPropertyClass);
 	}
 };
 
-struct UInterfaceProperty : UProperty {
-	kaddr InterfaceClass;//class UClass*
-
-	UInterfaceProperty(kaddr address) : UProperty(address) {
-		if (isValid()) {
-			InterfaceClass = getPtr(address + Offsets::UInterfacePropertyToInterfaceClass);
-		}
+struct UClassProperty {
+	static kaddr getMetaClass(kaddr prop){//class UClass*
+		return getPtr(prop + Offsets::UClassPropertyToMetaClass);
 	}
 };
 
-struct UArrayProperty : UProperty {
-	kaddr Inner;//UProperty*
-
-	UArrayProperty(kaddr address) : UProperty(address) {
-		if (isValid()) {
-			Inner = getPtr(address + Offsets::UArrayPropertyToInnerProperty);
-		}
+struct UInterfaceProperty {
+	static kaddr getInterfaceClass(kaddr prop){//class UClass*
+		return getPtr(prop + Offsets::UInterfacePropertyToInterfaceClass);
 	}
 };
 
-struct UMapProperty : UProperty {
-	kaddr KeyProp;//UProperty*
-	kaddr ValueProp;//UProperty*
-
-	UMapProperty(kaddr address) : UProperty(address) {
-		if (isValid()) {
-			KeyProp = getPtr(address + Offsets::UMapPropertyToKeyProp);
-			ValueProp = getPtr(address + Offsets::UMapPropertyToValueProp);
-		}
+struct UArrayProperty {
+	static kaddr getInner(kaddr prop){//UProperty*
+		return getPtr(prop + Offsets::UArrayPropertyToInnerProperty);
 	}
 };
 
-struct USetProperty : UProperty {
-	kaddr ElementProp;//UProperty*
+struct UMapProperty {
+	static kaddr getKeyProp(kaddr prop){//UProperty*
+		return getPtr(prop + Offsets::UMapPropertyToKeyProp);
+	}
 
-	USetProperty(kaddr address) : UProperty(address) {
-		if (isValid()) {
-			ElementProp = getPtr(address + Offsets::USetPropertyToElementProp);
-		}
+	static kaddr getValueProp(kaddr prop){//UProperty*
+		return getPtr(prop + Offsets::UMapPropertyToValueProp);
 	}
 };
 
-struct UStructProperty : UProperty {
-	kaddr Struct;//UStruct*
+struct USetProperty {
+	static kaddr getElementProp(kaddr prop){//UProperty*
+		return getPtr(prop + Offsets::USetPropertyToElementProp);
+	}
+};
 
-	UStructProperty(kaddr address) : UProperty(address) {
-		if (isValid()) {
-			Struct = getPtr(address + Offsets::UStructPropertyToStruct);
-		}
+struct UStructProperty {
+	static kaddr getStruct(kaddr prop){//UStruct*
+		return getPtr(prop + Offsets::UStructPropertyToStruct);
 	}
 };
 

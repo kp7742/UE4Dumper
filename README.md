@@ -11,6 +11,10 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
         4) Added Option to Dump SDK with GWorld
 		5) Updated Usage Text.
 - v0.5: Added Support to Resolve Functions
+- v0.6: 1) Added Support for UE 4.23+ Games for Strings and Objects(Use new Option: --newue)
+		2) Added 64bit Offsets to Fix 64bit Support
+		3) Updated SDK Generation Method for Faster Dumping
+		4) Short Options has been remove due to conflict with new options
 
 ## Features
 - No need of Ptrace
@@ -19,12 +23,13 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 - Fix and Regenerate So(Elf) File from Dump
 - Dumping of Game Structure SDK file(Need to Find Pointers Manually)
 - Support Fast Dumping(May Miss some data)
-- Support SDK Dumping for UE 4.18 Based Games
+- Support SDK Dumping for UE4 Based Games
 - Tested on 32bit PUBG Mobile Series
 
 ## Note
-- Use 32bit and 64bit Version on Respected Arch of Game
-- Recommend to use in Training Mode for PUBG Mobile
+- Use 32bit and 64bit Version on Respected Arch of Game.
+- Recommend to use in Training Mode for PUBG Mobile.
+- Fortnite using modified engine so SDK Dumping is Not Possible right now.
 - If it stuck during Generating SDK, Then Simple Stop it, Check Dump file and If needed then Try again.
  
 ## How to use
@@ -36,34 +41,35 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.5 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.6 <==> Made By KMODs(kp7742)
     Usage: ue4dumper <option(s)>
-    Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE 4.18
+    Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series
      Options:
     --SDK Dump With GObjectArray Args--------------------------------------------------------
-      -a --sdku                             Dump SDK with GUObject
-      -g --gname <address>                  GNames Pointer Address
-      -u --guobj <address>                  GUObject Pointer Address
+      --sdku                             Dump SDK with GUObject
+      --gname <address>                  GNames Pointer Address
+      --guobj <address>                  GUObject Pointer Address
     --SDK Dump With GWorld Args--------------------------------------------------------------
-      -b --sdkw                             Dump SDK with GWorld
-      -g --gname <address>                  GNames Pointer Address
-      -w --gworld <address>                 GWorld Pointer Address
+      --sdkw                             Dump SDK with GWorld
+      --gname <address>                  GNames Pointer Address
+      --gworld <address>                 GWorld Pointer Address
     --Dump Strings Args----------------------------------------------------------------------
-      -s --strings                          Dump Strings
-      -g --gname <address>                  GNames Pointer Address
+      --strings                          Dump Strings
+      --gname <address>                  GNames Pointer Address
     --Dump Objects Args----------------------------------------------------------------------
-      -n --objs                             Dumping Object List
-      -g --gname <address>                  GNames Pointer Address
-      -u --guobj <address>                  GUObject Pointer Address
+      --objs                             Dumping Object List
+      --gname <address>                  GNames Pointer Address
+      --guobj <address>                  GUObject Pointer Address
     --Lib Dump Args--------------------------------------------------------------------------
-      -l --lib                              Dump libUE4.so from Memory
-      -r --raw(Optional)                    Output Raw Lib and Not Rebuild It
-      -f --fast(Optional)                   Enable Fast Dumping(May Miss Some Bytes in Dump)
+      --lib                              Dump libUE4.so from Memory
+      --raw(Optional)                    Output Raw Lib and Not Rebuild It
+      --fast(Optional)                   Enable Fast Dumping(May Miss Some Bytes in Dump)
     --Other Args-----------------------------------------------------------------------------
-      -p --package <packageName>            Package Name of App(Default: com.tencent.ig)
-      -o --output <outputPath>              File Output path(Default: /sdcard)
-      -h --help                             Display this information
+	  --newue(Optional)                  Run in UE 4.23+ Mode
+      --package <packageName>            Package Name of App(Default: com.tencent.ig)
+      --output <outputPath>              File Output path(Default: /sdcard)
+      --help                             Display this information
 	```
 	
 ## How to Build

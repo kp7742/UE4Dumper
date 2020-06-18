@@ -135,7 +135,7 @@ char* ReadStr(kaddr address, unsigned int size) {
     char* data = new char[size];
 	for(int i=0; i < size; i++){
         vm_readv(reinterpret_cast<void*>(address + (sizeof(char)*i)), reinterpret_cast<void*>(data + i), sizeof(char));
-        if(data[i] == '\0'){
+        if(data[i] == 0x0){
         	break;
         }
 	}

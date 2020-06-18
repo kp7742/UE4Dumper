@@ -3,74 +3,77 @@
 
 using namespace std;
 
-const char* short_options = "hlrfnsabp:o:g:u:w:";
+const char* short_options = "hlrfnsabcp:o:g:u:w:";
 const struct option long_options[] = {
-		{"help", no_argument, NULL, 'h'},
-		{"lib", no_argument, NULL, 'l'},
-		{"raw", no_argument, NULL, 'r'},
-		{"fast", no_argument, NULL, 'f'},
-		{"package", required_argument, NULL, 'p'},
-		{"output", required_argument, NULL, 'o'},
-		{"gname", required_argument, NULL, 'g'},
-		{"guobj", required_argument, NULL, 'u'},
-		{"gworld", required_argument, NULL, 'w'},
-		{"objs", no_argument, NULL, 'n'},
-		{"strings", no_argument, NULL, 's'},
-		{"sdku", no_argument, NULL, 'a'},
-		{"sdkw", no_argument, NULL, 'b'},
-		{NULL, 0, NULL, 0}
+		{"help", no_argument, nullptr, 'h'},
+		{"lib", no_argument, nullptr, 'l'},
+		{"raw", no_argument, nullptr, 'r'},
+		{"fast", no_argument, nullptr, 'f'},
+		{"package", required_argument, nullptr, 'p'},
+		{"output", required_argument, nullptr, 'o'},
+		{"gname", required_argument, nullptr, 'g'},
+		{"guobj", required_argument, nullptr, 'u'},
+		{"gworld", required_argument, nullptr, 'w'},
+		{"objs", no_argument, nullptr, 'n'},
+		{"strings", no_argument, nullptr, 's'},
+		{"sdku", no_argument, nullptr, 'a'},
+		{"sdkw", no_argument, nullptr, 'b'},
+		{"newue", no_argument, nullptr, 'c'},
+		{nullptr, 0, nullptr, 0}
 };
 
 void Usage() {
-	printf("UE4Dumper v0.5 <==> Made By KMODs(kp7742)\n");
+	printf("UE4Dumper v0.6 <==> Made By KMODs(kp7742)\n");
 	printf("Usage: ue4dumper <option(s)>\n");
-	printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE 4.18\n");
+	printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine\n");
 	printf("Tested on PUBG Mobile Series\n");
 	printf(" Options:\n");
-    printf("--SDK Dump With GObjectArray Args--------------------------------------------------------\n");
-    printf("  -a --sdku                             Dump SDK with GUObject\n");
-    printf("  -g --gname <address>                  GNames Pointer Address\n");
-    printf("  -u --guobj <address>                  GUObject Pointer Address\n");
-    printf("--SDK Dump With GWorld Args--------------------------------------------------------------\n");
-    printf("  -b --sdkw                             Dump SDK with GWorld\n");
-    printf("  -g --gname <address>                  GNames Pointer Address\n");
-    printf("  -w --gworld <address>                 GWorld Pointer Address\n");
-    printf("--Dump Strings Args----------------------------------------------------------------------\n");
-    printf("  -s --strings                          Dump Strings\n");
-    printf("  -g --gname <address>                  GNames Pointer Address\n");
-    printf("--Dump Objects Args----------------------------------------------------------------------\n");
-    printf("  -n --objs                             Dumping Object List\n");
-	printf("  -g --gname <address>                  GNames Pointer Address\n");
-	printf("  -u --guobj <address>                  GUObject Pointer Address\n");
+	printf("--SDK Dump With GObjectArray Args--------------------------------------------------------\n");
+	printf("  --sdku                             Dump SDK with GUObject\n");
+	printf("  --gname <address>                  GNames Pointer Address\n");
+	printf("  --guobj <address>                  GUObject Pointer Address\n");
+	printf("--SDK Dump With GWorld Args--------------------------------------------------------------\n");
+	printf("  --sdkw                             Dump SDK with GWorld\n");
+	printf("  --gname <address>                  GNames Pointer Address\n");
+	printf("  --gworld <address>                 GWorld Pointer Address\n");
+	printf("--Dump Strings Args----------------------------------------------------------------------\n");
+	printf("  --strings                          Dump Strings\n");
+	printf("  --gname <address>                  GNames Pointer Address\n");
+	printf("--Dump Objects Args----------------------------------------------------------------------\n");
+	printf("  --objs                             Dumping Object List\n");
+	printf("  --gname <address>                  GNames Pointer Address\n");
+	printf("  --guobj <address>                  GUObject Pointer Address\n");
 	printf("--Lib Dump Args--------------------------------------------------------------------------\n");
-	printf("  -l --lib                              Dump libUE4.so from Memory\n");
-	printf("  -r --raw(Optional)                    Output Raw Lib and Not Rebuild It\n");
-	printf("  -f --fast(Optional)                   Enable Fast Dumping(May Miss Some Bytes in Dump)\n");
+	printf("  --lib                              Dump libUE4.so from Memory\n");
+	printf("  --raw(Optional)                    Output Raw Lib and Not Rebuild It\n");
+	printf("  --fast(Optional)                   Enable Fast Dumping(May Miss Some Bytes in Dump)\n");
 	printf("--Other Args-----------------------------------------------------------------------------\n");
-	printf("  -p --package <packageName>            Package Name of App(Default: com.tencent.ig)\n");
-	printf("  -o --output <outputPath>              File Output path(Default: /sdcard)\n");
-	printf("  -h --help                             Display this information\n");
+	printf("  --newue(Optional)                  Run in UE 4.23+ Mode\n");
+	printf("  --package <packageName>            Package Name of App(Default: com.tencent.ig)\n");
+	printf("  --output <outputPath>              File Output path(Default: /sdcard)\n");
+	printf("  --help                             Display this information\n");
 }
 
 kaddr getHexAddr(const char* addr){
-	auto is16Bit = [](const char* c) {
-		auto len = strlen(c);
-		if(len > 2) {
-			if(c[0] == '0' & c[1] == 'x') return true;
-		}
-		bool is10bit = true;
-		for(auto i = 0; i < len; i++) {
-			if((c[i] > 'a' && c[i] < 'f') ||
-			   (c[i] > 'A' && c[i] < 'F')) {
-				is10bit = false;
-			}
-		}
-		return !is10bit;
-	};
+//  NO Longer Needed!!
+//	auto is16Bit = [](const char* c) {
+//		auto len = strlen(c);
+//		if(len > 2) {
+//			if(c[0] == '0' & c[1] == 'x') return true;
+//		}
+//		bool is10bit = true;
+//		for(auto i = 0; i < len; i++) {
+//			if((c[i] > 'a' && c[i] < 'f') ||
+//			   (c[i] > 'A' && c[i] < 'F')) {
+//				is10bit = false;
+//			}
+//		}
+//		return !is10bit;
+//	};
 #ifndef __SO64__
-	return (kaddr) strtoul(addr, nullptr, is16Bit(addr) ? 16: 10);
+	return (kaddr) strtoul(addr, nullptr, 16);
 #else
-	return (kaddr) strtoull(addr, nullptr, is16Bit(addr) ? 16: 10);
+	return (kaddr) strtoull(addr, nullptr, 16);
 #endif
 }
 
@@ -124,6 +127,9 @@ int main(int argc, char *argv[]) {
 			case 'b':
 				isSdkDump2 = true;
 				break;
+			case 'c':
+				isUE423 = true;
+				break;
 			default:
 				isValidArg = false;
 				break;
@@ -133,6 +139,11 @@ int main(int argc, char *argv[]) {
 	if(!isValidArg || (!isLibDump && !isObjsDump && !isStrDump && !isSdkDump && !isSdkDump2)) {
 		printf("Wrong Arguments, Please Check!!\n");
 		Usage();
+		return -1;
+	}
+
+	if(isUE423 && isStrDump){
+		printf("Can't Dump Only Strings Right Now with New UE 4.23+ Mode!!\n");
 		return -1;
 	}
 
@@ -170,7 +181,7 @@ int main(int argc, char *argv[]) {
 			ofstream rdump(outputpath + "/" + lib_name, ofstream::out | ofstream::binary);
 			if (rdump.is_open()) {
 				if (isFastDump) {
-					uint8_t *buffer = new uint8_t[libsize];
+					auto *buffer = new uint8_t[libsize];
 					memset(buffer, '\0', libsize);
 					vm_readv((void *) start_addr, buffer, libsize);
 					rdump.write((char *) buffer, libsize);
@@ -193,7 +204,7 @@ int main(int argc, char *argv[]) {
 			ofstream ldump(tempPath, ofstream::out | ofstream::binary);
 			if (ldump.is_open()) {
 				if (isFastDump) {
-					uint8_t *buffer = new uint8_t[libsize];
+					auto *buffer = new uint8_t[libsize];
 					memset(buffer, '\0', libsize);
 					vm_readv((void *) start_addr, buffer, libsize);
 					ldump.write((char *) buffer, libsize);
@@ -294,7 +305,7 @@ int main(int argc, char *argv[]) {
 			Usage();
 			return -1;
 		}
-		DumpSDK2(outputpath);
+        DumpSDKW(outputpath);
 		cout << endl;
 	}
 	return 0;
