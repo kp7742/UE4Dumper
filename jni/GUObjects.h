@@ -9,9 +9,16 @@ using namespace std;
 int32 GetObjectCount(){
 	if(isUE423) {
 		return Read<int32>(getRealOffset(Offsets::GUObjectArray) +
-						   Offsets::FUObjectArrayToTUObjectArray + Offsets::TUObjectArrayToNumElements);
+						   Offsets::FUObjectArrayToTUObjectArray + Offsets::TUObjectArrayToNumElementsNew);
+	} else {
+        if(isEqual(pkg, "com.tencent.tmgp.pubgmhd")){
+            return Read<int32>(getRealOffset(Offsets::GUObjectArray) + 0x58 + Offsets::TUObjectArrayToNumElements);
+        } else {
+            return Read<int32>(getPtr(getRealOffset(Offsets::GUObjectArray)) +
+                               Offsets::FUObjectArrayToTUObjectArray + Offsets::TUObjectArrayToNumElements);
+        }
 	}
-	return 300000;
+    //return 300000;
 }
 
 kaddr GetUObjectFromID(uint32 index) {
@@ -21,10 +28,17 @@ kaddr GetUObjectFromID(uint32 index) {
 
 		return getPtr(Chunk + ((index % 0x10000) * Offsets::FUObjectItemSizeNew));
 	} else {
-		kaddr FUObjectArray = getPtr(getRealOffset(Offsets::GUObjectArray));
-		kaddr TUObjectArray = getPtr(FUObjectArray + Offsets::FUObjectArrayToTUObjectArray);
+	    if(isEqual(pkg, "com.tencent.tmgp.pubgmhd")){
+            kaddr FUObjectArray = getRealOffset(Offsets::GUObjectArray);
+            kaddr TUObjectArray = getPtr(FUObjectArray + 0x58);
 
-		return getPtr(TUObjectArray + (index * Offsets::FUObjectItemSize));
+            return getPtr(TUObjectArray + (index * Offsets::FUObjectItemSize));
+	    } else {
+            kaddr FUObjectArray = getPtr(getRealOffset(Offsets::GUObjectArray));
+            kaddr TUObjectArray = getPtr(FUObjectArray + Offsets::FUObjectArrayToTUObjectArray);
+
+            return getPtr(TUObjectArray + (index * Offsets::FUObjectItemSize));
+	    }
 	}
 }
 

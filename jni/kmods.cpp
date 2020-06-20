@@ -23,7 +23,7 @@ const struct option long_options[] = {
 };
 
 void Usage() {
-	printf("UE4Dumper v0.6 <==> Made By KMODs(kp7742)\n");
+	printf("UE4Dumper v0.7 <==> Made By KMODs(kp7742)\n");
 	printf("Usage: ue4dumper <option(s)>\n");
 	printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine\n");
 	printf("Tested on PUBG Mobile Series\n");
@@ -79,7 +79,7 @@ kaddr getHexAddr(const char* addr){
 
 int main(int argc, char *argv[]) {
 	int c;
-	string pkg("com.tencent.ig"), outputpath("/sdcard");
+	string outputpath("/sdcard");
 	bool isValidArg = true,
 	isLibDump = false,
 	isFastDump = false,

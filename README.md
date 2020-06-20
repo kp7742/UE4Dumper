@@ -15,6 +15,7 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 		2) Added 64bit Offsets to Fix 64bit Support
 		3) Updated SDK Generation Method for Faster Dumping
 		4) Short Options has been remove due to conflict with new options
+- v0.7: Fixed Object Dumping issue for PUBG CN(As of Now Tested on GP v1.8.10.8640).
 
 ## Features
 - No need of Ptrace
@@ -41,7 +42,7 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.6 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.7 <==> Made By KMODs(kp7742)
     Usage: ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series

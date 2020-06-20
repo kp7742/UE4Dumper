@@ -29,6 +29,7 @@
 #include "ELF/ElfRebuilder.h"
 #endif
 
+string pkg("com.tencent.ig");
 static const char* lib_name = "libUE4.so";
 
 bool isStartWith(string str, const char* check) {

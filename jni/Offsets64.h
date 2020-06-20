@@ -20,7 +20,8 @@ namespace Offsets {
         //Class: FUObjectArray
         FUObjectArrayToTUObjectArray = 0x10,
         //Class: TUObjectArray
-        TUObjectArrayToNumElements = 0x14,
+        TUObjectArrayToNumElements = 0xC,
+        TUObjectArrayToNumElementsNew = 0x14,
         //Class: UObject
         UObjectToInternalIndex = 0xC,
         UObjectToClassPrivate = 0x10,
