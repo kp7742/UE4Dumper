@@ -372,6 +372,7 @@ void DumpSDKW(string out) {
 		cout << "Dumping SDK List" << endl;
 		clock_t begin = clock();
 		kaddr gworld = getPtr(getRealOffset(Offsets::GWorld));
+        cout << "UWorld: " << setbase(16) << gworld << setbase(10) << " | Name: " << UObject::getName(gworld) << endl;
 		if (UObject::isValid(gworld)) {
 			//Iterate World
             writeStruct(sdk, UObject::getClass(gworld));
@@ -380,7 +381,7 @@ void DumpSDKW(string out) {
 			kaddr actorList = getPtr(level + Offsets::ULevelToAActors);
 			int actorsCount = Read<int>(level + Offsets::ULevelToAActorsCount);
 			for (int i = 0; i < actorsCount; i++) {
-                kaddr actor = getPtr(actorList + (i * sizeof(kaddr)));
+                kaddr actor = getPtr(actorList + (i * Offsets::PointerSize));
 				if (UObject::isValid(actor)) {
                     writeStruct(sdk, UObject::getClass(actor));
 				}
@@ -404,7 +405,7 @@ void TestDump(kaddr uobj){
     while (child) {
         cout << setbase(16) << child << " " << UObject::getName(child) << " " << UStruct::getClassName(child) << ";" << endl;
 
-        HexDump(child, 30);
+        //HexDump(child, 30);
 
         child = UField::getNext(child);
     }

@@ -26,7 +26,7 @@ kaddr GetUObjectFromID(uint32 index) {
 		kaddr TUObjectArray = getPtr(getRealOffset(Offsets::GUObjectArray) + Offsets::FUObjectArrayToTUObjectArray);
 		kaddr Chunk = getPtr(TUObjectArray + ((index / 0x10000) * Offsets::PointerSize));
 
-		return getPtr(Chunk + ((index % 0x10000) * Offsets::FUObjectItemSizeNew));
+		return getPtr(Chunk + ((index % 0x10000) * Offsets::FUObjectItemSize));
 	} else {
 	    if(isEqual(pkg, "com.tencent.tmgp.pubgmhd")){
             kaddr FUObjectArray = getRealOffset(Offsets::GUObjectArray);

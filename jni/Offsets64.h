@@ -11,8 +11,7 @@ namespace Offsets {
 	enum Offsets {
         //Global
         PointerSize = 0x8,
-        FUObjectItemSize = 0x14,
-        FUObjectItemSizeNew = 0x18,
+        FUObjectItemSize = 0x18,
 
         //---------SDK-----------
         //Class: FNameEntry
@@ -26,7 +25,7 @@ namespace Offsets {
         UObjectToInternalIndex = 0xC,
         UObjectToClassPrivate = 0x10,
         UObjectToFNameIndex = 0x18,
-        UObjectToOuterPrivate = 0x18,
+        UObjectToOuterPrivate = 0x20,
         //Class: UField
         UFieldToNext = 0x28,
         //Class: UStruct
@@ -34,7 +33,7 @@ namespace Offsets {
         UStructToChildren = 0x38,
         //Class: UFunction
         UFunctionToFunctionFlags = 0x88,
-        UFunctionToFunc = 0xAC,
+        UFunctionToFunc = 0xB0,
         //Class: UProperty
         UPropertyToElementSize = 0x34,
         UPropertyToPropertyFlags = 0x38,
@@ -62,8 +61,8 @@ namespace Offsets {
         //Class: UWorld
         UWorldToPersistentLevel = 0x30,
         //Class: ULevel
-        ULevelToAActors = 0x98,
-        ULevelToAActorsCount = 0xA0,
+        ULevelToAActors = 0xA0,
+        ULevelToAActorsCount = 0xA8,
 	};
 }
 

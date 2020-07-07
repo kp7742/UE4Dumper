@@ -12,7 +12,6 @@ namespace Offsets {
 		//Global
 		PointerSize = 0x4,
 		FUObjectItemSize = 0x10,
-		FUObjectItemSizeNew = 0x14,
 
 		//---------SDK-----------
 		//Class: FNameEntry
