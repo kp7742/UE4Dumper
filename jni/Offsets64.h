@@ -15,7 +15,7 @@ namespace Offsets {
 
         //---------SDK-----------
         //Class: FNameEntry
-        FNameEntryToNameString = 0x10,
+        FNameEntryToNameString = 0xC,
         //Class: FUObjectArray
         FUObjectArrayToTUObjectArray = 0x10,
         //Class: TUObjectArray

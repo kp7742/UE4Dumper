@@ -9,14 +9,15 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
         2) Fixed 64bit Library Rebuilding Not Working
         3) Added New Elf Dump Fix for 64bit Library
         4) Added Option to Dump SDK with GWorld
-		5) Updated Usage Text.
+		    5) Updated Usage Text.
 - v0.5: Added Support to Resolve Functions
 - v0.6: 1) Added Support for UE 4.23+ Games for Strings and Objects(Use new Option: --newue)
-		2) Added 64bit Offsets to Fix 64bit Support
-		3) Updated SDK Generation Method for Faster Dumping
-		4) Short Options has been remove due to conflict with new options
+		    2) Added 64bit Offsets to Fix 64bit Support
+		    3) Updated SDK Generation Method for Faster Dumping
+		    4) Short Options has been remove due to conflict with new options
 - v0.7: Fixed Object Dumping issue for PUBG CN(As of Now Tested on GP v1.8.10.8640).
 - v0.8: Fixed 64bit Support for Latest PUBG Version
+- v0.9: Fixed Dumping issue with 64bit PUBG
 
 ## Features
 - No need of Ptrace
@@ -26,7 +27,7 @@ Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Sup
 - Dumping of Game Structure SDK file(Need to Find Pointers Manually)
 - Support Fast Dumping(May Miss some data)
 - Support SDK Dumping for UE4 Based Games
-- Tested on 32bit PUBG Mobile Series
+- Tested on 32bit and 64bit PUBG Mobile Series
 
 ## Note
 - Use 32bit and 64bit Version on Respected Arch of Game.
