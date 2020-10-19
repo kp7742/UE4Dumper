@@ -411,4 +411,27 @@ void TestDump(kaddr uobj){
     }
 }
 
+void DumpActors(){
+    ///Dump All Actors
+    kaddr gworld = getRealOffset(Offsets::GWorld);
+    kaddr world = getPtr(gworld);
+    cout << "UWorld: " << setbase(16) << gworld << " | World: " << world << " | Name: " << UObject::getName(world) << endl;
+
+    kaddr level = getPtr(world + Offsets::UWorldToPersistentLevel);
+    cout << "Level: " << setbase(16) << level << " | Name: " << UObject::getName(level) << endl;
+
+    kaddr actorList = getPtr(level + Offsets::ULevelToAActors);
+    int actorsCount = Read<int>(level + Offsets::ULevelToAActorsCount);
+    cout << "ActorList: " << setbase(16) << actorList << ", ActorCount: " << setbase(10) << actorsCount << "\n" << endl;
+
+    for (int i = 0; i < actorsCount; i++) {
+        kaddr actor = getPtr(actorList + (i * sizeof(kaddr)));
+        if(UObject::isValid(actor)){
+            cout << "Id: " << setbase(10) << i << ", Addr: " << setbase(16) << actor << ", Actor: " << UObject::getName(actor) << endl;
+        } else {
+            cout << "Id: " << setbase(10) << i << ", Addr: " << setbase(16) << actor << endl;
+        }
+    }
+}
+
 #endif

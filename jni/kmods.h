@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <cmath>
 #include <ctime>
+#include <algorithm>
 #include <string>
 #include <list>
 #include <vector>
@@ -21,14 +22,15 @@
 #include "Mem.h"
 
 #if defined(__LP64__)
-#include "Offsets64.h"
 #include "ELF64/fix.h"
 #else
-#include "Offsets.h"
 #include "ELF/ElfReader.h"
 #include "ELF/ElfRebuilder.h"
 #endif
 
+bool isUE423 = false;
+bool deRefGNames = true;
+bool deRefGUObjectArray = false;
 string pkg("com.tencent.ig");
 static const char* lib_name = "libUE4.so";
 
@@ -52,6 +54,28 @@ bool isEqual(string s1, string s2) {
 bool isContain(string str, string check) {
 	size_t found = str.find(check);
 	return (found != string::npos);
+}
+
+void trimStr(string &str){
+    str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+}
+
+bool isFortnite() {
+	return isEqual(pkg, "com.epicgames.fortnite");
+}
+
+bool isARKSurvival() {
+    return isEqual(pkg, "com.studiowildcard.wardrumstudios.ark");
+}
+
+bool isGameOfPeace() {
+    return isEqual(pkg, "com.tencent.tmgp.pubgmhd");
+}
+
+bool isPUBGSeries() {
+    return isEqual(pkg, "com.tencent.ig") || isEqual(pkg, "com.tencent.iglite") ||
+           isEqual(pkg, "com.tencent.igce") || isEqual(pkg, "com.pubg.krmobile") ||
+           isEqual(pkg, "com.vng.pubgmobile") || isEqual(pkg, "com.rekoo.pubgm");
 }
 
 #endif

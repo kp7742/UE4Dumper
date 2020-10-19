@@ -3,7 +3,6 @@
 
 using namespace std;
 
-bool isUE423 = false;
 uint32 GNameCount = 170000;
 
 string getUEString(kaddr address) {
@@ -20,7 +19,7 @@ string GetFNameFromID(uint32 index) {
 		uint32 chunkOffset = index >> 16;
 		uint16 nameOffset = index;
 
-		kaddr fNamePool = getRealOffset(Offsets::GNames) + 0x30;
+		kaddr fNamePool = getRealOffset(Offsets::GNames) + Offsets::FNameToFNamePool;
 
 		kaddr namePoolChunk = getPtr(fNamePool + ((chunkOffset + 2) * 8));
 		kaddr entryOffset = namePoolChunk + (2 * nameOffset);
@@ -33,12 +32,21 @@ string GetFNameFromID(uint32 index) {
 
 		return uestring;
 	} else {
-		kaddr TNameEntryArray = getPtr(getRealOffset(Offsets::GNames));
+		if (deRefGNames) {
+			kaddr TNameEntryArray = getPtr(getRealOffset(Offsets::GNames));
 
-		kaddr FNameEntryArr = getPtr(TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
-		kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
+			kaddr FNameEntryArr = getPtr(TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
+			kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
 
-		return getUEString(FNameEntry + Offsets::FNameEntryToNameString);
+			return getUEString(FNameEntry + Offsets::FNameEntryToNameString);
+		} else {
+			kaddr TNameEntryArray = getRealOffset(Offsets::GNames);
+
+			kaddr FNameEntryArr = getPtr(TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
+			kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
+
+			return getUEString(FNameEntry + Offsets::FNameEntryToNameString);
+		}
 	}
 }
 

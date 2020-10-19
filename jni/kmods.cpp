@@ -1,9 +1,10 @@
 #include "kmods.h"
+#include "Offsets.h"
 #include "SDK.h"
 
 using namespace std;
 
-const char* short_options = "hlrfnsabcp:o:g:u:w:";
+const char* short_options = "hlrfnsabcdp:o:g:u:w:";
 const struct option long_options[] = {
 		{"help", no_argument, nullptr, 'h'},
 		{"lib", no_argument, nullptr, 'l'},
@@ -19,11 +20,12 @@ const struct option long_options[] = {
 		{"sdku", no_argument, nullptr, 'a'},
 		{"sdkw", no_argument, nullptr, 'b'},
 		{"newue", no_argument, nullptr, 'c'},
+        {"actors", no_argument, nullptr, 'd'},
 		{nullptr, 0, nullptr, 0}
 };
 
 void Usage() {
-	printf("UE4Dumper v0.9 <==> Made By KMODs(kp7742)\n");
+	printf("UE4Dumper v0.10 <==> Made By KMODs(kp7742)\n");
 	printf("Usage: ue4dumper <option(s)>\n");
 	printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine\n");
 	printf("Tested on PUBG Mobile Series\n");
@@ -47,6 +49,10 @@ void Usage() {
 	printf("  --lib                              Dump libUE4.so from Memory\n");
 	printf("  --raw(Optional)                    Output Raw Lib and Not Rebuild It\n");
 	printf("  --fast(Optional)                   Enable Fast Dumping(May Miss Some Bytes in Dump)\n");
+    printf("--Show ActorList With GWorld Args--------------------------------------------------------\n");
+    printf("  --actors                           Show Actors with GWorld\n");
+    printf("  --gname <address>                  GNames Pointer Address\n");
+    printf("  --gworld <address>                 GWorld Pointer Address\n");
 	printf("--Other Args-----------------------------------------------------------------------------\n");
 	printf("  --newue(Optional)                  Run in UE 4.23+ Mode\n");
 	printf("  --package <packageName>            Package Name of App(Default: com.tencent.ig)\n");
@@ -55,21 +61,6 @@ void Usage() {
 }
 
 kaddr getHexAddr(const char* addr){
-//  NO Longer Needed!!
-//	auto is16Bit = [](const char* c) {
-//		auto len = strlen(c);
-//		if(len > 2) {
-//			if(c[0] == '0' & c[1] == 'x') return true;
-//		}
-//		bool is10bit = true;
-//		for(auto i = 0; i < len; i++) {
-//			if((c[i] > 'a' && c[i] < 'f') ||
-//			   (c[i] > 'A' && c[i] < 'F')) {
-//				is10bit = false;
-//			}
-//		}
-//		return !is10bit;
-//	};
 #ifndef __SO64__
 	return (kaddr) strtoul(addr, nullptr, 16);
 #else
@@ -87,7 +78,8 @@ int main(int argc, char *argv[]) {
 	isObjsDump = false,
 	isStrDump = false,
 	isSdkDump = false,
-	isSdkDump2 = false;
+	isSdkDump2 = false,
+	isActorDump = false;
 
 	while((c = getopt_long(argc, argv, short_options, long_options, nullptr)) != -1) {
 		switch (c) {
@@ -130,22 +122,35 @@ int main(int argc, char *argv[]) {
 			case 'c':
 				isUE423 = true;
 				break;
+            case 'd':
+                isActorDump = true;
+                break;
 			default:
 				isValidArg = false;
 				break;
 		}
 	}
 
-	if(!isValidArg || (!isLibDump && !isObjsDump && !isStrDump && !isSdkDump && !isSdkDump2)) {
+#if defined(__LP64__)
+    Offsets::initOffsets_64();
+	Offsets::patchUE423_64();
+	Offsets::patchCustom_64();
+#else
+    Offsets::initOffsets_32();
+	Offsets::patchUE423_32();
+	Offsets::patchCustom_32();
+#endif
+
+	if(!isValidArg || (!isLibDump && !isObjsDump && !isStrDump && !isSdkDump && !isSdkDump2 && !isActorDump)) {
 		printf("Wrong Arguments, Please Check!!\n");
 		Usage();
 		return -1;
 	}
 
-	if(isUE423 && isStrDump){
-		printf("Can't Dump Only Strings Right Now with New UE 4.23+ Mode!!\n");
-		return -1;
-	}
+//	if(isUE423 && isStrDump){
+//		printf("Can't Dump Only Strings Right Now with New UE 4.23+ Mode!!\n");
+//		return -1;
+//	}
 
 	//Find PID
 	target_pid = find_pid(pkg.c_str());
@@ -308,6 +313,15 @@ int main(int argc, char *argv[]) {
         DumpSDKW(outputpath);
 		cout << endl;
 	}
+    if(isActorDump) {
+        if(Offsets::GNames < 1 || Offsets::GWorld < 1){
+            printf("Please Enter Correct GName and GWorld Addresses!!\n");
+            Usage();
+            return -1;
+        }
+		DumpActors();
+        cout << endl;
+    }
 	return 0;
 }
 
