@@ -201,7 +201,7 @@ namespace Offsets {
 	}
 
 	void patchCustom_64(){
-		if (isPUBGSeries()) {
+		if (isPUBGSeries() && !isPUBGLite()) {
 			//Class: FNameEntry
 			FNameEntryToNameString = 0xC;
 		}

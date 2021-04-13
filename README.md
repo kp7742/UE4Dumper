@@ -27,6 +27,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
     - 2) Support for PUBG CN(GP) Fixed(Tested on GP v1.9.10)
     - 3) Fixed Some Offsets Issues due to Modified UE4 Versions
     - 4) Offsets System Updated to Work with Other games, other then PUBG
+- v0.11: Fixed Dumping issue with 64bit PUBG Lite
 
 ## Features
 - No need of Ptrace
@@ -50,12 +51,12 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 - Put Executable in folder like /data/local/tmp (/sdcard not allow to execute binary so don't put it there)
 - Get Either Root Shell through Adb or Terminal Apps(type and run: 'su') or Normal Shell into Virtual Space via Terminal Apps in that folder
 - Give it executable permission with either 'chmod +x ue4dumper' or 'chmod 755 ue4dumper'
-- Run 'ue4dumper -h' For Usage Help
+- Run './ue4dumper -h' For Usage Help
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.10 <==> Made By KMODs(kp7742)
-    Usage: ue4dumper <option(s)>
+    UE4Dumper v0.11 <==> Made By KMODs(kp7742)
+    Usage: ./ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series
      Options:

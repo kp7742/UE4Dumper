@@ -72,10 +72,16 @@ bool isGameOfPeace() {
     return isEqual(pkg, "com.tencent.tmgp.pubgmhd");
 }
 
+bool isPUBGLite() {
+	return isEqual(pkg, "com.tencent.iglite");
+}
+
 bool isPUBGSeries() {
-    return isEqual(pkg, "com.tencent.ig") || isEqual(pkg, "com.tencent.iglite") ||
-           isEqual(pkg, "com.tencent.igce") || isEqual(pkg, "com.pubg.krmobile") ||
-           isEqual(pkg, "com.vng.pubgmobile") || isEqual(pkg, "com.rekoo.pubgm");
+    return isEqual(pkg, "com.tencent.ig") ||
+           isEqual(pkg, "com.tencent.igce") ||
+           isEqual(pkg, "com.pubg.krmobile") ||
+           isEqual(pkg, "com.vng.pubgmobile") ||
+           isEqual(pkg, "com.rekoo.pubgm") || isPUBGLite();
 }
 
 #endif
