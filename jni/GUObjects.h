@@ -28,39 +28,43 @@ kaddr GetUObjectFromID(uint32 index) {
 
 		return getPtr(Chunk + ((index % 0x10000) * Offsets::FUObjectItemSize));
 	} else {
+		kaddr FUObjectArray;
 	    if(deRefGUObjectArray){
-			kaddr FUObjectArray = getPtr(getRealOffset(Offsets::GUObjectArray));
-			kaddr TUObjectArray = getPtr(FUObjectArray + Offsets::FUObjectArrayToTUObjectArray);
-
-			return getPtr(TUObjectArray + (index * Offsets::FUObjectItemSize));
+	    	FUObjectArray = getPtr(getRealOffset(Offsets::GUObjectArray));
 	    } else {
-            kaddr FUObjectArray = getRealOffset(Offsets::GUObjectArray);
-            kaddr TUObjectArray = getPtr(FUObjectArray + Offsets::FUObjectArrayToTUObjectArray);
-
-            return getPtr(TUObjectArray + (index * Offsets::FUObjectItemSize));
+	    	FUObjectArray = getRealOffset(Offsets::GUObjectArray);
 	    }
+		kaddr TUObjectArray = getPtr(FUObjectArray + Offsets::FUObjectArrayToTUObjectArray);
+
+		return getPtr(TUObjectArray + (index * Offsets::FUObjectItemSize));
 	}
 }
 
 void DumpObjects(string out) {
 	uint32 count = 0;
-	ofstream obj(out + "/UObjects.txt", ofstream::out);
+	ofstream obj(out + "/Objects.txt", ofstream::out);
 	if (obj.is_open()) {
-		cout << "Dumping UObjects List" << endl;
+		cout << "Dumping Objects List: " << GetObjectCount() << endl;
+		clock_t begin = clock();
 		for (int32 i = 0; i < GetObjectCount(); i++) {
 			kaddr uobj = GetUObjectFromID(i);
 			if (UObject::isValid(uobj)) {
+				if(isVerbose){
+					cout << setbase(10) << "[" << i << "]: " << UObject::getName(uobj) << endl;
+				}
 				obj << setbase(10) << "[" << i << "]:" << endl;
-				obj << "Name: " << UObject::getName(uobj) << endl;
-				obj << "Class: " << UStruct::getClassName(uobj) << endl;
-				obj << "ObjectPtr: " << setbase(16) << uobj << endl;
-				obj << "ClassPtr: " << setbase(16) << UObject::getClass(uobj) << endl;
+				obj << "Name: " << UObject::getName(uobj).c_str() << endl;
+				obj << "Class: " << UObject::getClassName(uobj).c_str() << endl;
+				obj << "ObjectPtr: 0x" << setbase(16) << uobj << endl;
+				obj << "ClassPtr: 0x" << setbase(16) << UObject::getClass(uobj) << endl;
 				obj << endl;
 				count++;
 			}
 		}
 		obj.close();
-		cout << count << " UObjects Dumped" << endl;
+		clock_t end = clock();
+		double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+		cout << count << " Valid Objects Dumped in " << elapsed_secs << "S" << endl;
 	}
 }
 

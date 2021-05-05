@@ -29,6 +29,7 @@
 #endif
 
 bool isUE423 = false;
+bool isVerbose = false;
 bool deRefGNames = true;
 bool deRefGUObjectArray = false;
 string pkg("com.tencent.ig");
@@ -58,6 +59,10 @@ bool isContain(string str, string check) {
 
 void trimStr(string &str){
     str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+}
+
+bool isApexLegends() {
+	return isEqual(pkg, "com.ea.gp.apexlegendsmobilefps");
 }
 
 bool isFortnite() {

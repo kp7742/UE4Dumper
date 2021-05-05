@@ -28,6 +28,13 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
     - 3) Fixed Some Offsets Issues due to Modified UE4 Versions
     - 4) Offsets System Updated to Work with Other games, other then PUBG
 - v0.11: Fixed Dumping issue with 64bit PUBG Lite
+- v0.12:
+    - 1) Fixed Offsets for UE 4.23+ Mode
+    - 2) Fixed SDK Dumping for UE 4.23+ Mode
+    - 3) Fixed String Dumping for UE 4.23+ Mode
+    - 4) Added Offset Support for Apex Legends Mobile
+    - 5) Added Option to Detour or De-Reference GNames, GUObject Addresses
+    - 6) Added Option to See Verbose Output of String, Object and SDK Dumping
 
 ## Features
 - No need of Ptrace
@@ -41,9 +48,10 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 
 ## Note
 - Use 32bit and 64bit Version on Respected Arch of Game.
-- Some Games with Modified UE4 Might not Dump Correctly.
 - Recommend to use in Training Mode for PUBG Mobile.
-- If it stuck during Generating SDK, Then Simple Stop it, Check Dump file and If needed then Try again.
+- Some Games with Modified UE4 Might not Dump Correctly.
+- For Modified Engines, You May Need Put Your Custom Offsets For That Game.
+- If it stuck during Generating SDK, Then Simply Stop it, Check Dump file and If needed then Try again.
  
 ## How to use
 - You can Use latest precompiled Binaries from [HERE](https://github.com/kp7742/UE4Dumper/tree/master/libs/) or You Can build your Own.
@@ -55,39 +63,42 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.11 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.12 <==> Made By KMODs(kp7742)
     Usage: ./ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
-    Tested on PUBG Mobile Series
-     Options:
+    Tested on PUBG Mobile Series and Other UE4 Based Games
+    Options:
     --SDK Dump With GObjectArray Args--------------------------------------------------------
-      --sdku                             Dump SDK with GUObject
-      --gname <address>                  GNames Pointer Address
-      --guobj <address>                  GUObject Pointer Address
+      --sdku                              Dump SDK with GUObject
+      --gname <address>                   GNames Pointer Address
+      --guobj <address>                   GUObject Pointer Address
     --SDK Dump With GWorld Args--------------------------------------------------------------
-      --sdkw                             Dump SDK with GWorld
-      --gname <address>                  GNames Pointer Address
-      --gworld <address>                 GWorld Pointer Address
+      --sdkw                              Dump SDK with GWorld
+      --gname <address>                   GNames Pointer Address
+      --gworld <address>                  GWorld Pointer Address
     --Dump Strings Args----------------------------------------------------------------------
-      --strings                          Dump Strings
-      --gname <address>                  GNames Pointer Address
+      --strings                           Dump Strings
+      --gname <address>                   GNames Pointer Address
     --Dump Objects Args----------------------------------------------------------------------
-      --objs                             Dumping Object List
-      --gname <address>                  GNames Pointer Address
-      --guobj <address>                  GUObject Pointer Address
+      --objs                              Dumping Object List
+      --gname <address>                   GNames Pointer Address
+      --guobj <address>                   GUObject Pointer Address
     --Lib Dump Args--------------------------------------------------------------------------
-      --lib                              Dump libUE4.so from Memory
-      --raw(Optional)                    Output Raw Lib and Not Rebuild It
-      --fast(Optional)                   Enable Fast Dumping(May Miss Some Bytes in Dump)
+      --lib                               Dump libUE4.so from Memory
+      --raw(Optional)                     Output Raw Lib and Not Rebuild It
+      --fast(Optional)                    Enable Fast Dumping(May Miss Some Bytes in Dump)
     --Show ActorList With GWorld Args--------------------------------------------------------
-      --actors                           Show Actors with GWorld
-      --gname <address>                  GNames Pointer Address
-      --gworld <address>                 GWorld Pointer Address
+      --actors                            Show Actors with GWorld
+      --gname <address>                   GNames Pointer Address
+      --gworld <address>                  GWorld Pointer Address
     --Other Args-----------------------------------------------------------------------------
-      --newue(Optional)                  Run in UE 4.23+ Mode
-      --package <packageName>            Package Name of App(Default: com.tencent.ig)
-      --output <outputPath>              File Output path(Default: /sdcard)
-      --help                             Display this information
+      --newue(Optional)                   Run in UE 4.23+ Mode
+      --verbose(Optional)                 Show Verbose Output of Dumping
+      --derefgname(Optional) <true/false> De-Reference GNames Address(Default: true)
+      --derefguobj(Optional) <true/false> De-Reference GUObject Address(Default: false)
+      --package <packageName>             Package Name of App(Default: com.tencent.ig)
+      --output <outputPath>               File Output path(Default: /sdcard)
+      --help                              Display this information
 	```
 	
 ## How to Build
@@ -100,6 +111,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 ## Credits
 - [SoFixer](https://github.com/F8LEFT/SoFixer): 32bit So(Elf) Rebuilding
 - [elf-dump-fix](https://github.com/maiyao1988/elf-dump-fix): 64bit So(Elf) Rebuilding
+- [UnrealDumper-4.25](https://github.com/guttir14/UnrealDumper-4.25): UE 4.25+ Support
 
 ## Technlogy Communication
 > Email: patel.kuldip91@gmail.com

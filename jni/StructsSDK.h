@@ -28,23 +28,12 @@ struct UObject {
 		return GetFNameFromID(getNameID(object));
 	}
 
-    static string getClassPath(kaddr object) {
-        kaddr clazz = UObject::getClass(object);
-        string classname = UObject::getName(clazz);
-
-        kaddr superclass = getPtr(clazz + Offsets::UStructToSuperStruct);
-        while (superclass) {
-            classname += ".";
-            classname += UObject::getName(superclass);
-
-            superclass = getPtr(clazz + Offsets::UStructToSuperStruct);
-        }
-
-        return classname;
+    static string getClassName(kaddr object) {
+        return getName(getClass(object));
     }
 
 	static bool isValid(kaddr object){
-		return (object != 0 && getIndex(object) != 0 && getClass(object) != 0);
+		return (object != 0 && getClass(object) != 0);
 	}
 };
 
@@ -52,6 +41,20 @@ struct UField {
 	static kaddr getNext(kaddr field){//UField*
 		return getPtr(field + Offsets::UFieldToNext);
 	}
+};
+
+struct FField {
+    static string getName(kaddr fField) {
+        return GetFNameFromID(Read<uint32>(fField + Offsets::FFieldToName));
+    }
+
+    static string getClassName(kaddr fField) {
+        return GetFNameFromID(Read<uint32>(getPtr(fField + Offsets::FFieldToClass)));
+    }
+
+    static kaddr getNext(kaddr fField){//UField*
+        return getPtr(fField + Offsets::FFieldToNext);
+    }
 };
 
 struct UStruct {
@@ -63,11 +66,16 @@ struct UStruct {
 		return getPtr(structz + Offsets::UStructToChildren);
 	}
 
-	static string getClassName(kaddr object) {
-		return UObject::getName(UObject::getClass(object));
+	static kaddr getChildProperties(kaddr structz){//UField*
+		return getPtr(structz + Offsets::UStructToChildProperties);
 	}
 
-	static string getClassPath(kaddr clazz) {
+	static string getClassName(kaddr clazz) {
+		return UObject::getName(clazz);
+	}
+
+	static string getClassPath(kaddr object) {
+        kaddr clazz = UObject::getClass(object);
 		string classname = UObject::getName(clazz);
 
 		kaddr superclass = getSuperClass(clazz);
@@ -80,6 +88,20 @@ struct UStruct {
 
 		return classname;
 	}
+
+    static string getStructClassPath(kaddr clazz) {
+        string classname = UObject::getName(clazz);
+
+        kaddr superclass = getSuperClass(clazz);
+        while (superclass) {
+            classname += ".";
+            classname += UObject::getName(superclass);
+
+            superclass = getSuperClass(superclass);
+        }
+
+        return classname;
+    }
 };
 
 struct UFunction {

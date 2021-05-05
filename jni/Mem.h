@@ -133,13 +133,21 @@ T* ReadArr(kaddr address, unsigned int size) {
 
 char* ReadStr(kaddr address, unsigned int size) {
     char* data = new char[size];
-	for(int i=0; i < size; i++){
+    memset(data, '\0', size);
+    for(int i=0; i < size; i++){
         vm_readv(reinterpret_cast<void*>(address + (sizeof(char)*i)), reinterpret_cast<void*>(data + i), sizeof(char));
         if(data[i] == 0x0){
-        	break;
+            break;
         }
-	}
-	return data;
+    }
+    return data;
+}
+
+string ReadStr2(kaddr address, unsigned int size) {
+    string name("\0", size);
+    vm_readv((void*)address, (void*)name.data(), size * sizeof(char));
+    name.shrink_to_fit();
+    return name;
 }
 
 kaddr getPtr(kaddr address) {

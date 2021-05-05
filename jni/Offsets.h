@@ -11,11 +11,27 @@ namespace Offsets {
 	kaddr PointerSize;
 	kaddr FUObjectItemSize;
 
-	//---------SDK-----------
+	//---------SDK-----------//
+    //---------4.23+---------//
 	//Class: FNamePool
-	kaddr FNameToFNamePool;
+	kaddr FNameStride;
+	kaddr GNamesToFNamePool;//NamePoolData, alignas(FNamePool)
+	kaddr FNamePoolToCurrentBlock;
+	kaddr FNamePoolToCurrentByteCursor;
+    kaddr FNamePoolToBlocks;
+	//Class: FNameEntry
+    kaddr FNameEntryToLenBit;
+	kaddr FNameEntryToString;
+    //Class: UStruct
+    kaddr UStructToChildProperties;
+    //Class: FField
+    kaddr FFieldToClass;
+    kaddr FFieldToNext;
+    kaddr FFieldToName;
+    //---------4.18+---------//
 	//Class: FNameEntry
 	kaddr FNameEntryToNameString;
+    //-----------------------//
 	//Class: FUObjectArray
 	kaddr FUObjectArrayToTUObjectArray;
 	//Class: TUObjectArray
@@ -120,12 +136,23 @@ namespace Offsets {
 	}
 
 	void patchUE423_32() {
-		if (isUE423) {
-			//Class: FNamePool
-			FNameToFNamePool = 0x30;
-			//Class: TUObjectArray
-			TUObjectArrayToNumElements = 0x10;
-		}
+        //Class: FNamePool
+		FNameStride = 0x2;
+        GNamesToFNamePool = 0x30;
+		FNamePoolToCurrentBlock = 0x4;
+		FNamePoolToCurrentByteCursor = 0x8;
+		FNamePoolToBlocks = 0xC;
+		//Class: FNameEntry
+        FNameEntryToLenBit = 6;
+		FNameEntryToString = 0x2;
+        //Class: TUObjectArray
+        TUObjectArrayToNumElements = 0x10;
+        //Class: UStruct
+        UStructToChildProperties = 0x28;
+        //Class: FField
+        FFieldToClass = 0x4;
+        FFieldToNext = 0x10;
+        FFieldToName = 0x14;
 	}
 
 	void patchCustom_32(){
@@ -187,27 +214,44 @@ namespace Offsets {
 		//Class: UWorld
 		UWorldToPersistentLevel = 0x30;
 		//Class: ULevel
-		ULevelToAActors = 0xA0;
-		ULevelToAActorsCount = 0xA8;
+		ULevelToAActors = 0x98;
+		ULevelToAActorsCount = 0xA0;
 	}
 
 	void patchUE423_64() {
-		if (isUE423) {
-			//Class: FNamePool
-			FNameToFNamePool = 0x30;
-			//Class: TUObjectArray
-			TUObjectArrayToNumElements = 0x14;
-		}
+        //Class: FNamePool
+		FNameStride = 0x2;
+        GNamesToFNamePool = 0x30;
+		FNamePoolToCurrentBlock = 0x8;
+		FNamePoolToCurrentByteCursor = 0xC;
+		FNamePoolToBlocks = 0x10;
+		//Class: FNameEntry
+        FNameEntryToLenBit = 6;
+		FNameEntryToString = 0x2;
+        //Class: TUObjectArray
+        TUObjectArrayToNumElements = 0x14;
+        //Class: UStruct
+        UStructToChildProperties = 0x44;
+        //Class: FField
+        FFieldToClass = 0x8;
+        FFieldToNext = 0x20;
+        FFieldToName = 0x28;
 	}
 
 	void patchCustom_64(){
 		if (isPUBGSeries() && !isPUBGLite()) {
 			//Class: FNameEntry
 			FNameEntryToNameString = 0xC;
+            //Class: ULevel
+            ULevelToAActors = 0xA0;
+            ULevelToAActorsCount = 0xA8;
 		}
 		if (isGameOfPeace()) {
 			//Class: FUObjectArray
 			FUObjectArrayToTUObjectArray = 0x8;
+            //Class: ULevel
+            ULevelToAActors = 0xA0;
+            ULevelToAActorsCount = 0xA8;
 		}
 		if(isARKSurvival()){
 			//Class: UWorld
@@ -216,9 +260,39 @@ namespace Offsets {
 		if(isFortnite()){
 			//Class: UFunction
 			UFunctionToFunc = 0xAC;
-			//Class: ULevel
-			ULevelToAActors = 0x98;
-			ULevelToAActorsCount = 0xA0;
+		}
+		if(isApexLegends()){
+            //Class: UStruct
+            UStructToSuperStruct = 0x40;
+            UStructToChildren = 0x48;
+            UStructToChildProperties = 0x50;
+            //Class: UProperty
+            UPropertyToElementSize = 0x38;
+            UPropertyToPropertyFlags = 0x40;
+            UPropertyToOffsetInternal = 0x4C;
+            //Class: UFunction
+            UFunctionToFunctionFlags = 0xC0;
+            UFunctionToFunc = 0xE8;
+            //Class: UBoolProperty
+            UBoolPropertyToFieldSize = 0x78;
+            UBoolPropertyToByteOffset = 0x79;
+            UBoolPropertyToByteMask = 0x7A;
+            UBoolPropertyToFieldMask = 0x7B;
+            //Class: UObjectProperty
+            UObjectPropertyToPropertyClass = 0x78;
+            //Class: UClassProperty
+            UClassPropertyToMetaClass = 0x80;
+            //Class: UInterfaceProperty
+            UInterfacePropertyToInterfaceClass = 0x80;
+            //Class: UArrayProperty
+            UArrayPropertyToInnerProperty = 0x78;
+            //Class: UMapProperty
+            UMapPropertyToKeyProp = 0x78;
+            UMapPropertyToValueProp = 0x80;
+            //Class: USetProperty
+            USetPropertyToElementProp = 0x78;
+            //Class: UStructProperty
+            UStructPropertyToStruct = 0x78;
 		}
 	}
 }

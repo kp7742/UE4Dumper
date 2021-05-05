@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const char* short_options = "hlrfnsabcdp:o:g:u:w:";
+const char* short_options = "hlrfnsabcdvijp:o:g:u:w:";
 const struct option long_options[] = {
 		{"help", no_argument, nullptr, 'h'},
 		{"lib", no_argument, nullptr, 'l'},
@@ -21,43 +21,49 @@ const struct option long_options[] = {
 		{"sdkw", no_argument, nullptr, 'b'},
 		{"newue", no_argument, nullptr, 'c'},
         {"actors", no_argument, nullptr, 'd'},
+		{"verbose", no_argument, nullptr, 'v'},
+		{"derefgname", no_argument, nullptr, 'i'},
+		{"derefguobj", no_argument, nullptr, 'j'},
 		{nullptr, 0, nullptr, 0}
 };
 
 void Usage() {
-	printf("UE4Dumper v0.11 <==> Made By KMODs(kp7742)\n");
+	printf("UE4Dumper v0.12 <==> Made By KMODs(kp7742)\n");
 	printf("Usage: ./ue4dumper <option(s)>\n");
 	printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine\n");
-	printf("Tested on PUBG Mobile Series\n");
+	printf("Tested on PUBG Mobile Series and Other UE4 Based Games\n");
 	printf(" Options:\n");
 	printf("--SDK Dump With GObjectArray Args--------------------------------------------------------\n");
-	printf("  --sdku                             Dump SDK with GUObject\n");
-	printf("  --gname <address>                  GNames Pointer Address\n");
-	printf("  --guobj <address>                  GUObject Pointer Address\n");
+	printf("  --sdku                              Dump SDK with GUObject\n");
+	printf("  --gname <address>                   GNames Pointer Address\n");
+	printf("  --guobj <address>                   GUObject Pointer Address\n");
 	printf("--SDK Dump With GWorld Args--------------------------------------------------------------\n");
-	printf("  --sdkw                             Dump SDK with GWorld\n");
-	printf("  --gname <address>                  GNames Pointer Address\n");
-	printf("  --gworld <address>                 GWorld Pointer Address\n");
+	printf("  --sdkw                              Dump SDK with GWorld\n");
+	printf("  --gname <address>                   GNames Pointer Address\n");
+	printf("  --gworld <address>                  GWorld Pointer Address\n");
 	printf("--Dump Strings Args----------------------------------------------------------------------\n");
-	printf("  --strings                          Dump Strings\n");
-	printf("  --gname <address>                  GNames Pointer Address\n");
+	printf("  --strings                           Dump Strings\n");
+	printf("  --gname <address>                   GNames Pointer Address\n");
 	printf("--Dump Objects Args----------------------------------------------------------------------\n");
-	printf("  --objs                             Dumping Object List\n");
-	printf("  --gname <address>                  GNames Pointer Address\n");
-	printf("  --guobj <address>                  GUObject Pointer Address\n");
+	printf("  --objs                              Dumping Object List\n");
+	printf("  --gname <address>                   GNames Pointer Address\n");
+	printf("  --guobj <address>                   GUObject Pointer Address\n");
 	printf("--Lib Dump Args--------------------------------------------------------------------------\n");
-	printf("  --lib                              Dump libUE4.so from Memory\n");
-	printf("  --raw(Optional)                    Output Raw Lib and Not Rebuild It\n");
-	printf("  --fast(Optional)                   Enable Fast Dumping(May Miss Some Bytes in Dump)\n");
+	printf("  --lib                               Dump libUE4.so from Memory\n");
+	printf("  --raw(Optional)                     Output Raw Lib and Not Rebuild It\n");
+	printf("  --fast(Optional)                    Enable Fast Dumping(May Miss Some Bytes in Dump)\n");
     printf("--Show ActorList With GWorld Args--------------------------------------------------------\n");
-    printf("  --actors                           Show Actors with GWorld\n");
-    printf("  --gname <address>                  GNames Pointer Address\n");
-    printf("  --gworld <address>                 GWorld Pointer Address\n");
+    printf("  --actors                            Show Actors with GWorld\n");
+    printf("  --gname <address>                   GNames Pointer Address\n");
+    printf("  --gworld <address>                  GWorld Pointer Address\n");
 	printf("--Other Args-----------------------------------------------------------------------------\n");
-	printf("  --newue(Optional)                  Run in UE 4.23+ Mode\n");
-	printf("  --package <packageName>            Package Name of App(Default: com.tencent.ig)\n");
-	printf("  --output <outputPath>              File Output path(Default: /sdcard)\n");
-	printf("  --help                             Display this information\n");
+	printf("  --newue(Optional)                   Run in UE 4.23+ Mode\n");
+	printf("  --verbose(Optional)                 Show Verbose Output of Dumping\n");
+	printf("  --derefgname(Optional) <true/false> De-Reference GNames Address(Default: true)\n");
+	printf("  --derefguobj(Optional) <true/false> De-Reference GUObject Address(Default: false)\n");
+	printf("  --package <packageName>             Package Name of App(Default: com.tencent.ig)\n");
+	printf("  --output <outputPath>               File Output path(Default: /sdcard)\n");
+	printf("  --help                              Display this information\n");
 }
 
 kaddr getHexAddr(const char* addr){
@@ -125,6 +131,15 @@ int main(int argc, char *argv[]) {
             case 'd':
                 isActorDump = true;
                 break;
+			case 'v':
+				isVerbose = true;
+				break;
+			case 'i':
+				deRefGNames = isEqual(optarg, "true");
+				break;
+			case 'j':
+				deRefGUObjectArray = isEqual(optarg, "true");
+				break;
 			default:
 				isValidArg = false;
 				break;
@@ -133,11 +148,15 @@ int main(int argc, char *argv[]) {
 
 #if defined(__LP64__)
     Offsets::initOffsets_64();
-	Offsets::patchUE423_64();
+    if (isUE423) {
+        Offsets::patchUE423_64();
+    }
 	Offsets::patchCustom_64();
 #else
     Offsets::initOffsets_32();
-	Offsets::patchUE423_32();
+	if (isUE423) {
+        Offsets::patchUE423_32();
+    }
 	Offsets::patchCustom_32();
 #endif
 
@@ -146,11 +165,6 @@ int main(int argc, char *argv[]) {
 		Usage();
 		return -1;
 	}
-
-//	if(isUE423 && isStrDump){
-//		printf("Can't Dump Only Strings Right Now with New UE 4.23+ Mode!!\n");
-//		return -1;
-//	}
 
 	//Find PID
 	target_pid = find_pid(pkg.c_str());
