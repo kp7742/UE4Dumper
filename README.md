@@ -35,6 +35,10 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
     - 4) Added Offset Support for Apex Legends Mobile
     - 5) Added Option to Detour or De-Reference GNames, GUObject Addresses
     - 6) Added Option to See Verbose Output of String, Object and SDK Dumping
+- v0.13:
+    - 1) Fixed String Reading for Objects for UE 4.23+ Mode
+    - 2) Fixed SDK Dumping Issue Due to Invalid UStruct
+    - 3) Added Offset Support for Fortnite Mobile
 
 ## Features
 - No need of Ptrace
@@ -63,7 +67,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.12 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.13 <==> Made By KMODs(kp7742)
     Usage: ./ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series and Other UE4 Based Games
