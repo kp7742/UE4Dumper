@@ -89,12 +89,16 @@ bool isPUBGLite() {
     return isEqual(pkg, "com.tencent.iglite");
 }
 
+bool isBGMIndia() {
+    return isEqual(pkg, "com.pubg.imobile");
+}
+
 bool isPUBGSeries() {
     return isEqual(pkg, "com.tencent.ig") ||
            isEqual(pkg, "com.tencent.igce") ||
            isEqual(pkg, "com.pubg.krmobile") ||
            isEqual(pkg, "com.vng.pubgmobile") ||
-           isEqual(pkg, "com.rekoo.pubgm") || isPUBGLite();
+           isEqual(pkg, "com.rekoo.pubgm") || isPUBGLite() || isBGMIndia();
 }
 
 #endif
