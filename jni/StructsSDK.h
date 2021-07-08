@@ -104,7 +104,7 @@ struct UStruct {
     }
 
     static bool isValid(kaddr clazz) {
-        return (clazz != 0 && UObject::getNameID(clazz) != 0 && getSuperClass(clazz) != 0);
+        return (clazz > 0 && UObject::getNameID(clazz) > 0 && UObject::getClass(clazz) > 0);
     }
 };
 

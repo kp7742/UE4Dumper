@@ -3,14 +3,61 @@
 
 using namespace std;
 
+uint32 MAX_SIZE = 100;
 uint32 GNameLimit = 170000;
 
-string getUEString(kaddr address) {
-    unsigned int MAX_SIZE = 100;
+struct WideStr {
+    static int is_surrogate(UTF16 uc) {
+        return (uc - 0xd800u) < 2048u;
+    }
 
+    static int is_high_surrogate(UTF16 uc) {
+        return (uc & 0xfffffc00) == 0xd800;
+    }
+
+    static int is_low_surrogate(UTF16 uc) {
+        return (uc & 0xfffffc00) == 0xdc00;
+    }
+
+    static wchar_t surrogate_to_utf32(UTF16 high, UTF16 low) {
+        return (high << 10) + low - 0x35fdc00;
+    }
+
+    static wchar_t *w_str(kaddr str, size_t len) {
+        wchar_t *output = new wchar_t[len + 1];
+
+        UTF16 *source = ReadArr<UTF16>(str, len);
+
+        for (int i = 0; i < len; i++) {
+            const UTF16 uc = source[i];
+            if (!is_surrogate(uc)) {
+                output[i] = uc;
+            } else {
+                if (is_high_surrogate(uc) && is_low_surrogate(source[i]))
+                    output[i] = surrogate_to_utf32(uc, source[i]);
+                else
+                    output[i] = L'?';
+            }
+        }
+
+        output[len] = L'\0';
+        return output;
+    }
+
+    static string getString(kaddr StrPtr, int StrLength) {
+        wstring str = w_str(StrPtr, StrLength);
+
+        string result('\0', MAX_SIZE);
+
+        wcstombs((char *) result.data(), str.c_str(), MAX_SIZE);
+
+        return result;
+    }
+};
+
+string getUEString(kaddr address) {
     string uestring(ReadStr(address, MAX_SIZE));
     uestring.shrink_to_fit();
-
     return uestring;
 }
 
@@ -26,16 +73,16 @@ string GetFNameFromID(uint32 index) {
         kaddr FNameEntry = NamePoolChunk + (Offsets::FNameStride * Offset);
 
         int16 FNameEntryHeader = Read<int16>(FNameEntry);
+        kaddr StrPtr = FNameEntry + Offsets::FNameEntryToString;
         int StrLength = FNameEntryHeader >> Offsets::FNameEntryToLenBit;
 
-        ///Unicode Dumping Not Supported
+        ///Unicode Dumping Not Supported Yet
         if (StrLength > 0 && StrLength < 250) {
             bool wide = FNameEntryHeader & 1;
-            ///Wide Char Dumping Not Supported Yet
-            if (!wide) {
-                return ReadStr2(FNameEntry + Offsets::FNameEntryToString, StrLength);
+            if (wide) {
+                return WideStr::getString(StrPtr, StrLength);
             } else {
-                return "None";
+                return ReadStr2(StrPtr, StrLength);
             }
         } else {
             return "None";
@@ -78,18 +125,23 @@ DumpBlocks423(ofstream &gname, uint32 &count, kaddr FNamePool, uint32 blockId, u
             if (StrLength > 0) {
                 //String Length Limit
                 if (StrLength < 250) {
-                    ///Wide Char Dumping Not Supported Yet
-                    if (!wide) {
-                        //Dump
-                        uint32 key = (Block << 16 | Offset);
-                        string str = ReadStr2(FNameEntry + Offsets::FNameEntryToString, StrLength);
-                        if (isVerbose) {
-                            cout << setbase(10) << "{" << StrLength << "} [" << key << "]: " << str
-                                 << endl;
-                        }
-                        gname << "[" << key << "]: " << str << endl;
-                        count++;
+                    string str;
+                    uint32 key = (Block << 16 | Offset);
+                    kaddr StrPtr = FNameEntry + Offsets::FNameEntryToString;
+
+                    if (wide) {
+                        str = WideStr::getString(StrPtr, StrLength);
+                    } else {
+                        str = ReadStr2(StrPtr, StrLength);
                     }
+
+                    if (isVerbose) {
+                        cout << setbase(10) << "{" << StrLength << "} [" << key << "]: " << str
+                             << endl;
+                    }
+
+                    gname << "[" << key << "]: " << str << endl;
+                    count++;
                 }
             } else {
                 StrLength = -StrLength;

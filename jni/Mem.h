@@ -18,6 +18,8 @@ typedef signed short int int16;
 typedef signed int int32;
 typedef signed long long int64;
 
+typedef unsigned short UTF16;
+
 typedef uintptr_t kaddr;
 
 static kaddr libbase = 0;
