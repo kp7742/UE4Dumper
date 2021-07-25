@@ -43,6 +43,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 - v0.15:
     - 1) Fixed Struct Property Dumping
     - 2) Experimental Wide String Support Added for UE 4.23+ Mode
+- v0.16: Fixed Dumping issue with 64bit PUBG Lite
 
 ## Features
 - No need of Ptrace
@@ -71,7 +72,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.15 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.16 <==> Made By KMODs(kp7742)
     Usage: ./ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series and Other UE4 Based Games

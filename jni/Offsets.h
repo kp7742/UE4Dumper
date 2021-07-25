@@ -239,9 +239,11 @@ namespace Offsets {
     }
 
     void patchCustom_64() {
-        if (isPUBGSeries() && !isPUBGLite()) {
-            //Class: FNameEntry
-            FNameEntryToNameString = 0xC;
+        if (isPUBGSeries()) {
+            if(!isPUBGLite()) {
+                //Class: FNameEntry
+                FNameEntryToNameString = 0xC;
+            }
             //Class: ULevel
             ULevelToAActors = 0xA0;
             ULevelToAActorsCount = 0xA8;
