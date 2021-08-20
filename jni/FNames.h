@@ -47,7 +47,7 @@ struct WideStr {
     static string getString(kaddr StrPtr, int StrLength) {
         wstring str = w_str(StrPtr, StrLength);
 
-        string result('\0', MAX_SIZE);
+        string result(MAX_SIZE, '\0');
 
         wcstombs((char *) result.data(), str.c_str(), MAX_SIZE);
 
@@ -136,7 +136,7 @@ DumpBlocks423(ofstream &gname, uint32 &count, kaddr FNamePool, uint32 blockId, u
                     }
 
                     if (isVerbose) {
-                        cout << setbase(10) << "{" << StrLength << "} [" << key << "]: " << str
+                        cout << (wide ? "Wide" : "") << dec << "{" << StrLength << "} [" << key << "]: " << str
                              << endl;
                     }
 

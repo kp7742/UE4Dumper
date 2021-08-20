@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const char *short_options = "hlrfnsabcdvijp:o:g:u:w:";
+const char *short_options = "hlrfnsabcdvi:j:p:o:g:u:w:";
 const struct option long_options[] = {
         {"help",       no_argument,       nullptr, 'h'},
         {"lib",        no_argument,       nullptr, 'l'},
@@ -22,13 +22,13 @@ const struct option long_options[] = {
         {"newue",      no_argument,       nullptr, 'c'},
         {"actors",     no_argument,       nullptr, 'd'},
         {"verbose",    no_argument,       nullptr, 'v'},
-        {"derefgname", no_argument,       nullptr, 'i'},
-        {"derefguobj", no_argument,       nullptr, 'j'},
+        {"derefgname", required_argument, nullptr, 'i'},
+        {"derefguobj", required_argument, nullptr, 'j'},
         {nullptr, 0,                      nullptr, 0}
 };
 
 void Usage() {
-    printf("UE4Dumper v0.16 <==> Made By KMODs(kp7742)\n");
+    printf("UE4Dumper v0.17 <==> Made By KMODs(kp7742)\n");
     printf("Usage: ./ue4dumper <option(s)>\n");
     printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine\n");
     printf("Tested on PUBG Mobile Series and Other UE4 Based Games\n");
