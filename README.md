@@ -47,6 +47,9 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 - v0.17:
     - 1) Fixed Crash with Deref Options
     - 2) Fixed Issue with Wide String Dumping
+- v0.18:
+    - 1) Fixed Dumping issue with 64bit PUBG CN
+    - 2) Fixed Another Issue with String Dumping
 
 ## Features
 - No need of Ptrace
@@ -75,7 +78,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.17 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.18 <==> Made By KMODs(kp7742)
     Usage: ./ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series and Other UE4 Based Games

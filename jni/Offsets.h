@@ -157,6 +157,8 @@ namespace Offsets {
 
     void patchCustom_32() {
         if (isGameOfPeace()) {
+            //Class: FNameEntry
+            FNameEntryToNameString = 0xA;
             //Class: FUObjectArray
             FUObjectArrayToTUObjectArray = 0x8;
         }
@@ -249,6 +251,8 @@ namespace Offsets {
             ULevelToAActorsCount = 0xA8;
         }
         if (isGameOfPeace()) {
+            //Class: FNameEntry
+            FNameEntryToNameString = 0xE;
             //Class: FUObjectArray
             FUObjectArrayToTUObjectArray = 0x8;
             //Class: ULevel

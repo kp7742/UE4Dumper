@@ -55,12 +55,6 @@ struct WideStr {
     }
 };
 
-string getUEString(kaddr address) {
-    string uestring(ReadStr(address, MAX_SIZE));
-    uestring.shrink_to_fit();
-    return uestring;
-}
-
 string GetFNameFromID(uint32 index) {
     if (isUE423) {
         uint32 Block = index >> 16;
@@ -95,7 +89,7 @@ string GetFNameFromID(uint32 index) {
                     TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
             kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
 
-            return getUEString(FNameEntry + Offsets::FNameEntryToNameString);
+            return ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE);
         } else {
             kaddr TNameEntryArray = getRealOffset(Offsets::GNames);
 
@@ -103,7 +97,7 @@ string GetFNameFromID(uint32 index) {
                     TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
             kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
 
-            return getUEString(FNameEntry + Offsets::FNameEntryToNameString);
+            return ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE);
         }
     }
 }
