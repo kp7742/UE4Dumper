@@ -19,12 +19,12 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
     - 2) Added 64bit Offsets to Fix 64bit Support
     - 3) Updated SDK Generation Method for Faster Dumping
     - 4) Short Options has been remove due to conflict with new options
-- v0.7: Fixed Object Dumping issue for PUBG CN(Tested on GP v1.8.10)
+- v0.7: Fixed Object Dumping issue for PUBG CN(Tested on GFP v1.8.10)
 - v0.8: Fixed 64bit Support for Latest PUBG Version
 - v0.9: Fixed Dumping issue with 64bit PUBG
 - v0.10:
-    - 1) Added Option to View Actors of Main Level(Use new Option: --actors)
-    - 2) Support for PUBG CN(GP) Fixed(Tested on GP v1.9.10)
+    - 1) Added Option to Print Actors of Main Level(Use new Option: --actors)
+    - 2) Support for PUBG CN(GFP) Fixed(Tested on GFP v1.9.10)
     - 3) Fixed Some Offsets Issues due to Modified UE4 Versions
     - 4) Offsets System Updated to Work with Other games, other then PUBG
 - v0.11: Fixed Dumping issue with 64bit PUBG Lite
@@ -50,6 +50,11 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 - v0.18:
     - 1) Fixed Dumping issue with 64bit PUBG CN
     - 2) Fixed Another Issue with String Dumping
+- v0.19:
+    - 1) Fixed Object Dumping issue with PUBG CN
+    - 2) Improved String Dumping Output
+    - 3) Fixed Verbose Output Not Showing while String Dumping
+    - 4) General Improvements to SDK Dumping
 
 ## Features
 - No need of Ptrace
@@ -78,7 +83,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.18 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.19 <==> Made By KMODs(kp7742)
     Usage: ./ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series and Other UE4 Based Games

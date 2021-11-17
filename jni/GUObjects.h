@@ -30,7 +30,7 @@ kaddr GetUObjectFromID(uint32 index) {
                 getRealOffset(Offsets::GUObjectArray) + Offsets::FUObjectArrayToTUObjectArray);
         kaddr Chunk = getPtr(TUObjectArray + ((index / 0x10000) * Offsets::PointerSize));
 
-        return getPtr(Chunk + ((index % 0x10000) * Offsets::FUObjectItemSize));
+        return getPtr(Chunk + Offsets::FUObjectItemPad + ((index % 0x10000) * Offsets::FUObjectItemSize));
     } else {
         kaddr FUObjectArray;
         if (deRefGUObjectArray) {

@@ -31,6 +31,8 @@
 #endif
 
 bool isUE423 = false;
+bool isPUBGNS = false;
+bool isPGLite = false;
 bool isVerbose = false;
 bool deRefGNames = true;
 bool deRefGUObjectArray = false;
@@ -79,6 +81,10 @@ bool isFortnite() {
 
 bool isARKSurvival() {
     return isEqual(pkg, "com.studiowildcard.wardrumstudios.ark");
+}
+
+bool isPUBGNewState() {
+    return isEqual(pkg, "com.pubg.newstate") || isEqual(pkg, "com.pubg.newstate.beta");
 }
 
 bool isGameOfPeace() {

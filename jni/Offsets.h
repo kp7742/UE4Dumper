@@ -9,6 +9,7 @@ namespace Offsets {
     kaddr GNames;
     kaddr GUObjectArray;
     kaddr PointerSize;
+    kaddr FUObjectItemPad;
     kaddr FUObjectItemSize;
 
     //---------SDK-----------//
@@ -82,6 +83,7 @@ namespace Offsets {
     void initOffsets_32() {
         //Global
         PointerSize = 0x4;
+        FUObjectItemPad = 0x0;
         FUObjectItemSize = 0x10;
 
         //---------SDK-----------
@@ -160,13 +162,16 @@ namespace Offsets {
             //Class: FNameEntry
             FNameEntryToNameString = 0xA;
             //Class: FUObjectArray
-            FUObjectArrayToTUObjectArray = 0x8;
+            FUObjectArrayToTUObjectArray = 0x70;
+            //Class: TUObjectArray
+            TUObjectArrayToNumElements = 0xC;
         }
     }
 
     void initOffsets_64() {
         //Global
         PointerSize = 0x8;
+        FUObjectItemPad = 0x0;
         FUObjectItemSize = 0x18;
 
         //---------SDK-----------
@@ -254,10 +259,21 @@ namespace Offsets {
             //Class: FNameEntry
             FNameEntryToNameString = 0xE;
             //Class: FUObjectArray
-            FUObjectArrayToTUObjectArray = 0x8;
+            FUObjectArrayToTUObjectArray = 0xB0;
+            //Class: TUObjectArray
+            TUObjectArrayToNumElements = 0x14;
             //Class: ULevel
             ULevelToAActors = 0xA0;
             ULevelToAActorsCount = 0xA8;
+        }
+        if(isPUBGNewState()){
+            FUObjectItemPad = 0x10;
+            //Class: FNamePool
+            GNamesToFNamePool = 0x34E0;
+            //Class: FUObjectArray
+            FUObjectArrayToTUObjectArray = 0x0;
+            //Class: TUObjectArray
+            TUObjectArrayToNumElements = 0xC;
         }
         if (isARKSurvival()) {
             //Class: UWorld

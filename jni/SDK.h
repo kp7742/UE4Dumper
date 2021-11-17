@@ -565,12 +565,12 @@ void writeStruct(ofstream &sdk, kaddr clazz) {
     kaddr currStruct = clazz;
     while (UStruct::isValid(currStruct)) {
         string name = UObject::getName(currStruct);
-        if (isEqual(name, "None")) {
+        if (isEqual(name, "None") || isContain(name, "_png") || name.empty()) {
             break;
         }
 
         uint32 NameID = UObject::getNameID(currStruct);
-        if (!isScanned(NameID) && !name.empty()) {
+        if (!isScanned(NameID)) {
             //Verbose Output
             if (isVerbose) {
                 cout << "Name: " << name << endl;

@@ -130,11 +130,13 @@ DumpBlocks423(ofstream &gname, uint32 &count, kaddr FNamePool, uint32 blockId, u
                     }
 
                     if (isVerbose) {
-                        cout << (wide ? "Wide" : "") << dec << "{" << StrLength << "} [" << key << "]: " << str
+                        cout << (wide ? "Wide" : "") << dec << "{" << StrLength << "} " << hex
+                             << "[" << key << "]: " << str
                              << endl;
                     }
 
-                    gname << "[" << key << "]: " << str << endl;
+                    gname << (wide ? "Wide" : "") << dec << "{" << StrLength << "} " << hex << "["
+                          << key << "]: " << str << endl;
                     count++;
                 }
             } else {
@@ -159,7 +161,6 @@ void DumpStrings(string out) {
         cout << "Dumping Strings" << endl;
         clock_t begin = clock();
         if (isUE423) {
-            //cout << "String Dump for UE4.23+ Not Supported Yet" << endl;//No Longer Needed
             kaddr FNamePool = getRealOffset(Offsets::GNames) + Offsets::GNamesToFNamePool;
 
             uint32 BlockSize = Offsets::FNameStride * 65536;
@@ -179,6 +180,9 @@ void DumpStrings(string out) {
                 string s = GetFNameFromID(i);
                 if (!s.empty()) {
                     gname << "[" << i << "]: " << s << endl;
+                    if (isVerbose) {
+                        cout << "[" << i << "]: " << s << endl;
+                    }
                     count++;
                 }
             }
