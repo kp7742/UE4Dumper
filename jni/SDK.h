@@ -175,7 +175,7 @@ list<kaddr> writeStructChild(ofstream &sdk, kaddr childprop) {
 
             sdk << "\t" << UObject::getName(propertyClass) << "* " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
 
             recurrce.push_back(propertyClass);
         } else if (isEqual(cname, "ClassProperty") || isEqual(cname, "AssetClassProperty") ||
@@ -184,7 +184,7 @@ list<kaddr> writeStructChild(ofstream &sdk, kaddr childprop) {
 
             sdk << "\tclass " << UObject::getName(metaClass) << "* " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
 
             recurrce.push_back(metaClass);
         } else if (isEqual(cname, "InterfaceProperty")) {
@@ -192,98 +192,104 @@ list<kaddr> writeStructChild(ofstream &sdk, kaddr childprop) {
 
             sdk << "\tinterface class " << UObject::getName(interfaceClass) << "* " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "StructProperty")) {
             kaddr Struct = UStructProperty::getStruct(prop);
 
             sdk << "\t" << UObject::getName(Struct) << " " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
 
             recurrce.push_back(Struct);
         } else if (isEqual(cname, "ArrayProperty")) {
             sdk << "\t" << resolveProp(recurrce, UArrayProperty::getInner(prop)) << "[] " << oname
                 << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "SetProperty")) {
             sdk << "\t<" << resolveProp(recurrce, USetProperty::getElementProp(prop)) << "> "
                 << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "MapProperty")) {
             sdk << "\t<" << resolveProp(recurrce, UMapProperty::getKeyProp(prop)) << ","
                 << resolveProp(recurrce, UMapProperty::getValueProp(prop)) << "> " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "BoolProperty")) {
             sdk << "\tbool " << oname << ";"
                 << setbase(10) << "//(ByteOffset: " << (int) UBoolProperty::getByteOffset(prop)
                 << ", ByteMask: " << (int) UBoolProperty::getByteMask(prop)
                 << ", FieldMask: " << (int) UBoolProperty::getFieldMask(prop) << ")"
                 << "[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "ByteProperty")) {
             sdk << "\tbyte " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "IntProperty")) {
             sdk << "\tint " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "Int8Property")) {
             sdk << "\tint8 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "Int16Property")) {
             sdk << "\tint16 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "Int64Property")) {
             sdk << "\tint64 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "UInt16Property")) {
             sdk << "\tuint16 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "UInt32Property")) {
             sdk << "\tuint32 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "UInt64Property")) {
             sdk << "\tuint64 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "DoubleProperty")) {
             sdk << "\tdouble " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "FloatProperty")) {
             sdk << "\tfloat " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "EnumProperty")) {
             sdk << "\tenum " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "StrProperty")) {
             sdk << "\tFString " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "TextProperty")) {
             sdk << "\tFText " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "NameProperty")) {
             sdk << "\tFName " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "DelegateProperty") ||
-                   isEqual(cname, "MulticastDelegateProperty")) {
+                   isEqual(cname, "MulticastDelegateProperty") ||
+                   isEqual(cname, "MulticastInlineDelegateProperty") ||
+                   isEqual(cname, "MulticastSparseDelegateProperty")) {
             sdk << "\tdelegate " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
+        } else if (isEqual(cname, "XigPtrProperty")) {
+            sdk << "\tXigPtrProperty " << oname << ";"
+                << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isStartWith(cname, "Function") || isEqual(cname, "DelegateFunction")) {
             string returnVal = "void";
             string params = "";
@@ -342,7 +348,7 @@ list<kaddr> writeStructChild(ofstream &sdk, kaddr childprop) {
                 << "// 0x" << setbase(16) << (UFunction::getFunc(prop) - libbase) << endl;
         } else {
             sdk << "\t" << cname << " " << oname << ";"
-                << "//[Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "//[Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         }
 
         child = UField::getNext(child);
@@ -365,7 +371,7 @@ list<kaddr> writeStructChild423(ofstream &sdk, kaddr childprop) {
 
             sdk << "\t" << UObject::getName(propertyClass) << "* " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
 
             recurrce.push_back(propertyClass);
         } else if (isEqual(cname, "ClassProperty") || isEqual(cname, "AssetClassProperty") ||
@@ -374,7 +380,7 @@ list<kaddr> writeStructChild423(ofstream &sdk, kaddr childprop) {
 
             sdk << "\tclass " << UObject::getName(metaClass) << "* " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
 
             recurrce.push_back(metaClass);
         } else if (isEqual(cname, "InterfaceProperty")) {
@@ -382,102 +388,108 @@ list<kaddr> writeStructChild423(ofstream &sdk, kaddr childprop) {
 
             sdk << "\tinterface class " << UObject::getName(interfaceClass) << "* " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "StructProperty")) {
             kaddr Struct = UStructProperty::getStruct(prop);
 
             sdk << "\t" << UObject::getName(Struct) << " " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
 
             recurrce.push_back(Struct);
         } else if (isEqual(cname, "ArrayProperty")) {
             sdk << "\t" << resolveProp423(recurrce, UArrayProperty::getInner(prop)) << "[] "
                 << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "SetProperty")) {
             sdk << "\t<" << resolveProp423(recurrce, USetProperty::getElementProp(prop)) << "> "
                 << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "MapProperty")) {
             sdk << "\t<" << resolveProp423(recurrce, UMapProperty::getKeyProp(prop)) << ","
                 << resolveProp423(recurrce, UMapProperty::getValueProp(prop)) << "> " << oname
                 << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "BoolProperty")) {
             sdk << "\tbool " << oname << ";"
                 << setbase(10) << "//(ByteOffset: " << (int) UBoolProperty::getByteOffset(prop)
                 << ", ByteMask: " << (int) UBoolProperty::getByteMask(prop)
                 << ", FieldMask: " << (int) UBoolProperty::getFieldMask(prop) << ")"
                 << "[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "ByteProperty")) {
             sdk << "\tbyte " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "IntProperty")) {
             sdk << "\tint " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "Int8Property")) {
             sdk << "\tint8 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "Int16Property")) {
             sdk << "\tint16 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "Int64Property")) {
             sdk << "\tint64 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "UInt16Property")) {
             sdk << "\tuint16 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "UInt32Property")) {
             sdk << "\tuint32 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "UInt64Property")) {
             sdk << "\tuint64 " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "DoubleProperty")) {
             sdk << "\tdouble " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "FloatProperty")) {
             sdk << "\tfloat " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "EnumProperty")) {
             sdk << "\tenum " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "StrProperty")) {
             sdk << "\tFString " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "TextProperty")) {
             sdk << "\tFText " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "NameProperty")) {
             sdk << "\tFName " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isEqual(cname, "DelegateProperty") ||
-                   isEqual(cname, "MulticastDelegateProperty")) {
+                   isEqual(cname, "MulticastDelegateProperty") ||
+                   isEqual(cname, "MulticastInlineDelegateProperty") ||
+                   isEqual(cname, "MulticastSparseDelegateProperty")) {
             sdk << "\tdelegate " << oname << ";"
                 << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
-                << "Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
+        } else if (isEqual(cname, "XigPtrProperty")) {
+            sdk << "\tXigPtrProperty " << oname << ";"
+                << "//[Offset: 0x" << setbase(16) << UProperty::getOffset(prop) << ", "
+                << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else {
             sdk << "\t" << cname << " " << oname << ";"
-                << "//[Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "//[Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         }
 
         child = FField::getNext(child);
@@ -551,7 +563,7 @@ list<kaddr> writeStructChild423_Func(ofstream &sdk, kaddr childprop) {
                 << "// 0x" << setbase(16) << (UFunction::getFunc(prop) - libbase) << endl;
         } else {
             sdk << "\t" << cname << " " << oname << ";"
-                << "//[Size: " << setbase(10) << UProperty::getElementSize(prop) << "]" << endl;
+                << "//[Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         }
 
         child = UField::getNext(child);
@@ -563,9 +575,10 @@ void writeStruct(ofstream &sdk, kaddr clazz) {
     list<kaddr> recurrce;
 
     kaddr currStruct = clazz;
-    while (UStruct::isValid(currStruct)) {
+    while (UObject::isValid(currStruct)) {
         string name = UObject::getName(currStruct);
-        if (isEqual(name, "None") || isContain(name, "_png") || name.empty()) {
+        if (isEqual(name, "None") || isContain(name, "/Game/") || isContain(name, "_png") ||
+            name.empty()) {
             break;
         }
 
@@ -603,7 +616,12 @@ void DumpSDK(string out) {
     if (sdk.is_open()) {
         cout << "Dumping SDK List" << endl;
         clock_t begin = clock();
-        for (int32 i = 0; i < GetObjectCount(); i++) {
+        int32 oCount = GetObjectCount();
+        cout << "Objects Counts: " << setbase(10) << oCount << endl;
+        if (oCount < 10 || oCount > 999999) {
+            oCount = 300000;
+        }
+        for (int32 i = 0; i < oCount; i++) {
             kaddr uobj = GetUObjectFromID(i);
             if (UObject::isValid(uobj)) {
                 writeStruct(sdk, UObject::getClass(uobj));
@@ -612,7 +630,8 @@ void DumpSDK(string out) {
         sdk.close();
         clock_t end = clock();
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        cout << classCount << " Items Dumped in SDK in " << elapsed_secs << "S" << endl;
+        cout << setbase(10) << classCount << " Items Dumped in SDK in " << elapsed_secs << "S"
+             << endl;
     }
 }
 
@@ -623,7 +642,7 @@ void DumpSDKW(string out) {
     if (sdk.is_open()) {
         cout << "Dumping SDK List" << endl;
         clock_t begin = clock();
-        kaddr gworld = getPtr(getRealOffset(Offsets::GWorld));
+        kaddr gworld = getPtr(UWorld::getGWorld());
         cout << "UWorld: " << setbase(16) << gworld << setbase(10) << " | Name: "
              << UObject::getName(gworld) << endl;
         if (UObject::isValid(gworld)) {
@@ -650,21 +669,25 @@ void DumpSDKW(string out) {
 void TestDump(kaddr uobj) {
     cout << "Obj: " << setbase(16) << uobj << endl;
     cout << "Name: " << UObject::getName(uobj) << endl;
-    cout << "Class: " << UObject::getClassName(uobj) << endl;
+    cout << "Class: " << UObject::getName(UObject::getClass(uobj)) << endl;
     cout << "Outer: " << UObject::getName(UObject::getOuter(uobj)) << endl;
     cout << "ClassPath: " << UStruct::getClassPath(uobj) << endl;
 
+    //HexDump(uobj, 40);
+
     kaddr clazz = UObject::getClass(uobj);
+
+    HexDump(clazz, 50);
 
     if (isUE423) {
         //Props
         kaddr child = UStruct::getChildProperties(clazz);
         while (child) {
             cout << setbase(16) << "0x" << child << " - " << FField::getName(child) << " - "
-                 << FField::getClassName(child) <<
-                 " - 0x" << UProperty::getOffset(child) << ";" << endl;
+                 << FField::getClassName(child) << " - 0x" << UProperty::getOffset(child) << " - 0x"
+                 << setbase(16) << UProperty::getElementSize(child) << ";" << endl;
 
-            //HexDump(child, 30);
+            //HexDump(child, 40);
 
             child = FField::getNext(child);
         }
@@ -676,7 +699,7 @@ void TestDump(kaddr uobj) {
                  << UObject::getClassName(child) <<
                  " - 0x" << UFunction::getFunc(child) - libbase << ";" << endl;
 
-            //HexDump(child, 50);
+            //HexDump(child, 40);
 
             child = UField::getNext(child);
         }
@@ -695,8 +718,9 @@ void TestDump(kaddr uobj) {
 
 void DumpActors() {
     ///Dump All Actors
-    kaddr gworld = getRealOffset(Offsets::GWorld);
+    kaddr gworld = UWorld::getGWorld();
     kaddr world = getPtr(gworld);
+
     cout << "UWorld: " << setbase(16) << gworld << " | World: " << world << " | Name: "
          << UObject::getName(world) << endl;
 

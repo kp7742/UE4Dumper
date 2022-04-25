@@ -40,6 +40,8 @@ struct WideStr {
             }
         }
 
+        free(source);
+
         output[len] = L'\0';
         return output;
     }
@@ -82,23 +84,74 @@ string GetFNameFromID(uint32 index) {
             return "None";
         }
     } else {
-        if (deRefGNames) {
-            kaddr TNameEntryArray = getPtr(getRealOffset(Offsets::GNames));
+        static kaddr TNameEntryArray;
 
-            kaddr FNameEntryArr = getPtr(
-                    TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
-            kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
-
-            return ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE);
-        } else {
-            kaddr TNameEntryArray = getRealOffset(Offsets::GNames);
-
-            kaddr FNameEntryArr = getPtr(
-                    TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
-            kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
-
-            return ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE);
+        if (TNameEntryArray) {//As usual caching ;)
+            goto gotGName;
         }
+
+        if (isPtrDec) {
+            if (isPGLite) {
+                uint32 modeSel = Read<uint32>(getRealOffset(Offsets::PGLEncSelect));
+                if (modeSel) {
+                    kaddr blockSlice = getPtr(getRealOffset(Offsets::PGLBlockSlice1));
+                    if (blockSlice) {
+                        kaddr block = getPtr(blockSlice + (Offsets::PointerSize * 5));
+
+                        uint8 shift = Read<uint8>(getRealOffset(Offsets::PGLBlockShift));
+                        kaddr offset = Offsets::PointerSize * (shift + 5);
+
+                        kaddr encGName = getPtr(block + offset);
+
+#if defined(__LP64__)
+                        TNameEntryArray = encGName ^ 0x7878787878787878;
+#else
+                        TNameEntryArray = encGName ^ 0x78787878;
+#endif
+                    } else {
+                        return "None";
+                    }
+                } else {
+                    kaddr blockSlice = getRealOffset(Offsets::PGLBlockSlice2);
+                    if (blockSlice && Read<int>(blockSlice + 0x4)) {
+                        kaddr block = getPtr(blockSlice + 0x8);
+
+                        uint32 shift = Read<uint32>(blockSlice);
+                        uint32 offset = (Offsets::PointerSize * 2) * (((shift - 0x64) / 0x3) - 1);
+
+                        TNameEntryArray = getPtr(block + offset);
+                    } else {
+                        return "None";
+                    }
+                }
+            } else {
+                kaddr blockSlice = getRealOffset(Offsets::GNames);
+                if (blockSlice) {
+                    kaddr block = getPtr(blockSlice + 0x8);
+
+                    uint32 shift = Read<uint32>(blockSlice);
+                    uint32 offset = (Offsets::PointerSize * 2) * (((shift - 0x64) / 0x3) - 1);
+
+                    TNameEntryArray = getPtr(block + offset);
+                } else {
+                    return "None";
+                }
+            }
+        } else {
+            if (deRefGNames) {
+                TNameEntryArray = getPtr(getRealOffset(Offsets::GNames));
+            } else {
+                TNameEntryArray = getRealOffset(Offsets::GNames);
+            }
+        }
+
+        gotGName:
+        kaddr FNameEntryArr = getPtr(
+                TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
+        kaddr FNameEntry = getPtr(
+                FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
+
+        return ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE);
     }
 }
 
@@ -140,7 +193,7 @@ DumpBlocks423(ofstream &gname, uint32 &count, kaddr FNamePool, uint32 blockId, u
                     count++;
                 }
             } else {
-                StrLength = -StrLength;
+                StrLength = -StrLength;//Negative lengths are for Unicode Characters
             }
 
             //Next

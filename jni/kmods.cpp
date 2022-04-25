@@ -4,31 +4,32 @@
 
 using namespace std;
 
-const char *short_options = "hlrfnsabcdvi:j:p:o:g:u:w:";
+const char *short_options = "hlrfnsabcdevi:j:p:o:g:u:w:";
 const struct option long_options[] = {
         {"help",       no_argument,       nullptr, 'h'},
         {"lib",        no_argument,       nullptr, 'l'},
         {"raw",        no_argument,       nullptr, 'r'},
         {"fast",       no_argument,       nullptr, 'f'},
-        {"package",    required_argument, nullptr, 'p'},
-        {"output",     required_argument, nullptr, 'o'},
-        {"gname",      required_argument, nullptr, 'g'},
-        {"guobj",      required_argument, nullptr, 'u'},
-        {"gworld",     required_argument, nullptr, 'w'},
         {"objs",       no_argument,       nullptr, 'n'},
         {"strings",    no_argument,       nullptr, 's'},
         {"sdku",       no_argument,       nullptr, 'a'},
         {"sdkw",       no_argument,       nullptr, 'b'},
         {"newue",      no_argument,       nullptr, 'c'},
         {"actors",     no_argument,       nullptr, 'd'},
+        {"ptrdec",     no_argument,       nullptr, 'e'},
         {"verbose",    no_argument,       nullptr, 'v'},
         {"derefgname", required_argument, nullptr, 'i'},
         {"derefguobj", required_argument, nullptr, 'j'},
+        {"package",    required_argument, nullptr, 'p'},
+        {"output",     required_argument, nullptr, 'o'},
+        {"gname",      required_argument, nullptr, 'g'},
+        {"guobj",      required_argument, nullptr, 'u'},
+        {"gworld",     required_argument, nullptr, 'w'},
         {nullptr, 0,                      nullptr, 0}
 };
 
 void Usage() {
-    printf("UE4Dumper v0.19 <==> Made By KMODs(kp7742)\n");
+    printf("UE4Dumper v0.20 <==> Made By KMODs(kp7742)\n");
     printf("Usage: ./ue4dumper <option(s)>\n");
     printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine\n");
     printf("Tested on PUBG Mobile Series and Other UE4 Based Games\n");
@@ -58,6 +59,7 @@ void Usage() {
     printf("  --gworld <address>                  GWorld Pointer Address\n");
     printf("--Other Args-----------------------------------------------------------------------------\n");
     printf("  --newue(Optional)                   Run in UE 4.23+ Mode\n");
+    printf("  --ptrdec(Optional)                  Use Pointer Decryption Mode\n");
     printf("  --verbose(Optional)                 Show Verbose Output of Dumping\n");
     printf("  --derefgname(Optional) <true/false> De-Reference GNames Address(Default: true)\n");
     printf("  --derefguobj(Optional) <true/false> De-Reference GUObject Address(Default: false)\n");
@@ -130,6 +132,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'd':
                 isActorDump = true;
+                break;
+            case 'e':
+                isPtrDec = true;
                 break;
             case 'v':
                 isVerbose = true;

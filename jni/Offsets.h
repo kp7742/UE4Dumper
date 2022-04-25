@@ -9,8 +9,13 @@ namespace Offsets {
     kaddr GNames;
     kaddr GUObjectArray;
     kaddr PointerSize;
-    kaddr FUObjectItemPad;
+    kaddr FUObjectItemPadd;
     kaddr FUObjectItemSize;
+    //-----PUBG Lite-----//
+    kaddr PGLEncSelect;
+    kaddr PGLBlockSlice1;
+    kaddr PGLBlockShift;
+    kaddr PGLBlockSlice2;
 
     //---------SDK-----------//
     //---------4.23+---------//
@@ -83,7 +88,7 @@ namespace Offsets {
     void initOffsets_32() {
         //Global
         PointerSize = 0x4;
-        FUObjectItemPad = 0x0;
+        FUObjectItemPadd = 0x0;
         FUObjectItemSize = 0x10;
 
         //---------SDK-----------
@@ -158,6 +163,12 @@ namespace Offsets {
     }
 
     void patchCustom_32() {
+        if (isPUBGLite()) {//GName Fix(0.22)
+            PGLEncSelect = 0x4EEDD74;
+            PGLBlockSlice1 = 0x4F6DE98;
+            PGLBlockShift = 0x4F6DE89;
+            PGLBlockSlice2 = 0x4F6DEB0;
+        }
         if (isGameOfPeace()) {
             //Class: FNameEntry
             FNameEntryToNameString = 0xA;
@@ -171,7 +182,7 @@ namespace Offsets {
     void initOffsets_64() {
         //Global
         PointerSize = 0x8;
-        FUObjectItemPad = 0x0;
+        FUObjectItemPadd = 0x0;
         FUObjectItemSize = 0x18;
 
         //---------SDK-----------
@@ -247,13 +258,19 @@ namespace Offsets {
 
     void patchCustom_64() {
         if (isPUBGSeries()) {
-            if(!isPUBGLite()) {
+            if (!isPUBGLite()) {
                 //Class: FNameEntry
                 FNameEntryToNameString = 0xC;
             }
             //Class: ULevel
             ULevelToAActors = 0xA0;
             ULevelToAActorsCount = 0xA8;
+        }
+        if (isPUBGLite()) {//GName Fix(0.22)
+            PGLEncSelect = 0x6F38CA4;
+            PGLBlockSlice1 = 0x6F39010;
+            PGLBlockShift = 0x6F38FF1;
+            PGLBlockSlice2 = 0x6F39040;
         }
         if (isGameOfPeace()) {
             //Class: FNameEntry
@@ -266,14 +283,61 @@ namespace Offsets {
             ULevelToAActors = 0xA0;
             ULevelToAActorsCount = 0xA8;
         }
-        if(isPUBGNewState()){
-            FUObjectItemPad = 0x10;
+        if (isPUBGNewState()) {
+            FUObjectItemPadd = 0x8;//0x10//0x8//0x10
             //Class: FNamePool
-            GNamesToFNamePool = 0x34E0;
+            GNamesToFNamePool = 0x18A0;//0x24A8//0x3CE0
+            //Class: FField
+            FFieldToClass = 0x18;//0x18//0x10
+            FFieldToNext = 0x10;//0x30//0x8//0x18
+            FFieldToName = 0x8;//0x10//0x20
             //Class: FUObjectArray
-            FUObjectArrayToTUObjectArray = 0x0;
+            FUObjectArrayToTUObjectArray = 0x140;//0x58
             //Class: TUObjectArray
-            TUObjectArrayToNumElements = 0xC;
+            TUObjectArrayToNumElements = -0xC;//0x14//0xC
+            //Class: UObject
+            UObjectToFNameIndex = 0x58;//0x60//0x8//0xC
+            UObjectToClassPrivate = 0x38;//0x10//0x38//0x18
+            UObjectToInternalIndex = 0x8;//0x50//0x58//0x38
+            UObjectToOuterPrivate = 0x18;//0x30//0x10//0x48
+            //Class: UField
+            UFieldToNext = 0x68;
+            //Class: UStruct
+            UStructToChildren = 0x90;//0x90//0xB0//0xA0
+            UStructToChildProperties = 0xE0;//0xE8//0xB8//0x98
+            UStructToSuperStruct = 0x88;//0xC0//0xD8//0xC8
+            //Class: UProperty
+            UPropertyToElementSize = 0x38;//0x3C//0x38//0x3C
+            UPropertyToPropertyFlags = 0x40;
+            UPropertyToOffsetInternal = 0x4C;
+            //Class: UFunction
+            UFunctionToFunctionFlags = 0x10C;//0x10C//0xFC//0xF0
+            UFunctionToFunc = 0xF8;//0x100//0x108//0xF8
+            //Class: UBoolProperty
+            UBoolPropertyToFieldSize = 0x78;
+            UBoolPropertyToByteOffset = 0x79;
+            UBoolPropertyToByteMask = 0x7A;
+            UBoolPropertyToFieldMask = 0x7B;
+            //Class: UObjectProperty
+            UObjectPropertyToPropertyClass = 0x78;
+            //Class: UClassProperty
+            UClassPropertyToMetaClass = 0x80;
+            //Class: UInterfaceProperty
+            UInterfacePropertyToInterfaceClass = 0x80;
+            //Class: UArrayProperty
+            UArrayPropertyToInnerProperty = 0x78;
+            //Class: UMapProperty
+            UMapPropertyToKeyProp = 0x78;
+            UMapPropertyToValueProp = 0x80;
+            //Class: USetProperty
+            USetPropertyToElementProp = 0x78;
+            //Class: UStructProperty
+            UStructPropertyToStruct = 0x78;
+            //Class: UWorld
+            UWorldToPersistentLevel = 0x70;
+            //Class: ULevel
+            ULevelToAActors = 0x220;//0xB0//0x140//0xB0
+            ULevelToAActorsCount = 0x228;//0xB8//0x148//0xB8
         }
         if (isARKSurvival()) {
             //Class: UWorld

@@ -7,12 +7,62 @@ using namespace std;
 
 //--------------SDK-----------------//
 
+// Reversed engineered from NS
+struct XigPtrProperty {
+    //InternalIndex
+    static int32 getInt32Dec(kaddr addr, kaddr e1 = 0x0, kaddr e2 = 0x4, kaddr e3 = 0x8) {
+        return getInt32(addr + e1) ^
+               __ROR4__(getInt32(addr + e2) ^ getInt32(addr + e3) ^ 0xB5C76D21, 0x18);
+    }
+
+    //ClassPrivate, OuterPrivate
+    static kaddr getPointerDec(kaddr addr, kaddr e1 = 0x0, kaddr e2 = 0x8, kaddr e3 = 0x10) {
+        return getPtr(addr + e1) ^
+               __ROR8__(getPtr(addr + e2) ^
+                        getPtr(addr + e3) ^ 0x710E72A6B6D59D01LL, 0x30);
+    }
+};
+
+struct UWorld {
+    // There might be better way :P
+    static kaddr ExtAddr(kaddr addr, kaddr shift) {
+#if defined(__LP64__)
+        return (kaddr) getUInt8(addr + getUInt8(addr + shift)) |
+               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x4)) << 8) |
+               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x8)) << 16) |
+               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0xC)) << 24) |
+               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x10)) << 32) |
+               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x14)) << 40) |
+               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x18)) << 48) |
+               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x20)) << 56);
+#else
+        return (kaddr)getUInt8(addr + getUInt8(addr + shift)) |
+            ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x4)) << 8) |
+            ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x8)) << 16) |
+            ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0xC)) << 24);
+#endif
+    }
+
+    static kaddr getGWorld() {
+        if (isPtrDec && isPUBGSeries() && !isPGLite) {
+            return ExtAddr(getPtr(getRealOffset(Offsets::GWorld)), 0x80);
+        }
+        return getRealOffset(Offsets::GWorld);
+    }
+};
+
 struct UObject {
     static int32 getIndex(kaddr object) {
+        if (isPtrDec && isPUBGNS) {
+            return XigPtrProperty::getInt32Dec(object + Offsets::UObjectToInternalIndex);
+        }
         return Read<int32>(object + Offsets::UObjectToInternalIndex);
     }
 
     static kaddr getClass(kaddr object) {//UClass*
+        if (isPtrDec && isPUBGNS) {
+            return XigPtrProperty::getPointerDec(object + Offsets::UObjectToClassPrivate);
+        }
         return getPtr(object + Offsets::UObjectToClassPrivate);
     }
 
@@ -21,6 +71,9 @@ struct UObject {
     }
 
     static kaddr getOuter(kaddr object) {//UObject*
+        if (isPtrDec && isPUBGNS) {
+            return XigPtrProperty::getPointerDec(object + Offsets::UObjectToOuterPrivate);
+        }
         return getPtr(object + Offsets::UObjectToOuterPrivate);
     }
 
@@ -33,7 +86,7 @@ struct UObject {
     }
 
     static bool isValid(kaddr object) {
-        return (object != 0 && getNameID(object) != 0 && getClass(object) != 0);
+        return (object > 0 && getNameID(object) > 0 && getClass(object) > 0);
     }
 };
 
@@ -101,10 +154,6 @@ struct UStruct {
         }
 
         return classname;
-    }
-
-    static bool isValid(kaddr clazz) {
-        return (clazz > 0 && UObject::getNameID(clazz) > 0 && UObject::getClass(clazz) > 0);
     }
 };
 

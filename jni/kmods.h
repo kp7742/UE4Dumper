@@ -22,9 +22,7 @@
 #include "Mem.h"
 
 #if defined(__LP64__)
-
 #include "ELF64/fix.h"
-
 #else
 #include "ELF/ElfReader.h"
 #include "ELF/ElfRebuilder.h"
@@ -33,6 +31,7 @@
 bool isUE423 = false;
 bool isPUBGNS = false;
 bool isPGLite = false;
+bool isPtrDec = false;
 bool isVerbose = false;
 bool deRefGNames = true;
 bool deRefGUObjectArray = false;

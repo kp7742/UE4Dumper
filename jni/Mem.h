@@ -127,10 +127,9 @@ void Write(kaddr address, T data) {
 
 template<typename T>
 T *ReadArr(kaddr address, unsigned int size) {
-    T data[size];
-    T *ptr = data;
-    vm_readv(reinterpret_cast<void *>(address), reinterpret_cast<void *>(ptr), (sizeof(T) * size));
-    return ptr;
+    T *data = new T[size];
+    vm_readv(reinterpret_cast<void *>(address), reinterpret_cast<void *>(data), (sizeof(T) * size));
+    return data;
 }
 
 string ReadStr(kaddr address, unsigned int size) {
@@ -138,7 +137,7 @@ string ReadStr(kaddr address, unsigned int size) {
     memset(data, '\0', size);
 
     for (int i = 0; i < size; i++) {
-        vm_readv((void*)(address + (sizeof(char) * i)), (void*)(&data[0] + i), sizeof(char));
+        vm_readv((void *) (address + (sizeof(char) * i)), (void *) (&data[0] + i), sizeof(char));
         if (data[i] == 0x0) {
             break;
         }
@@ -160,14 +159,23 @@ kaddr getPtr(kaddr address) {
     return Read<kaddr>(address);
 }
 
-void HexDump(kaddr addr, int lines) {
+int32 getInt32(kaddr address) {
+    return Read<int32>(address);
+}
+
+uint8 getUInt8(kaddr address) {
+    return Read<uint8>(address);
+}
+
+void HexDump(kaddr addr, int lines, kaddr offset = 0x0) {
     printf("\n\t\t:Hex Dump:\n\n");
     int ptr = 0;
     for (int i = 0; i < lines; i++) {
+        kaddr curr = addr + (i * 8);
 #if defined(__LP64__)
-        printf("0x%04lx: ", addr + (i * 8));
+        printf("0x%04lx - 0x%04lx: ", curr, (curr - addr) + offset);
 #else
-        printf("0x%04x: ", addr + (i*8));
+        printf("0x%04x - 0x%04x: ", curr, (curr - addr) + offset);
 #endif
         for (int j = 0; j < 8; j++) {
 #if defined(__LP64__)
@@ -248,5 +256,42 @@ void HexDump8B(kaddr addr, int lines) {
     }
     printf("\n");
 }
+
+// rotate left
+template<class T>
+T __ROL__(T value, int count) {
+    const uint nbits = sizeof(T) * 8;
+
+    if (count > 0) {
+        count %= nbits;
+        T high = value >> (nbits - count);
+        if (T(-1) < 0) // signed value
+            high &= ~((T(-1) << count));
+        value <<= count;
+        value |= high;
+    } else {
+        count = -count % nbits;
+        T low = value << (nbits - count);
+        value >>= count;
+        value |= low;
+    }
+    return value;
+}
+
+inline uint8 __ROL1__(uint8 value, int count) { return __ROL__((uint8) value, count); }
+
+inline uint16 __ROL2__(uint16 value, int count) { return __ROL__((uint16) value, count); }
+
+inline uint32 __ROL4__(uint32 value, int count) { return __ROL__((uint32) value, count); }
+
+inline uint64 __ROL8__(uint64 value, int count) { return __ROL__((uint64) value, count); }
+
+inline uint8 __ROR1__(uint8 value, int count) { return __ROL__((uint8) value, -count); }
+
+inline uint16 __ROR2__(uint16 value, int count) { return __ROL__((uint16) value, -count); }
+
+inline uint32 __ROR4__(uint32 value, int count) { return __ROL__((uint32) value, -count); }
+
+inline uint64 __ROR8__(uint64 value, int count) { return __ROL__((uint64) value, -count); }
 
 #endif //MEMORY_H

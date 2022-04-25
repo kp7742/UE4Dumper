@@ -30,7 +30,8 @@ kaddr GetUObjectFromID(uint32 index) {
                 getRealOffset(Offsets::GUObjectArray) + Offsets::FUObjectArrayToTUObjectArray);
         kaddr Chunk = getPtr(TUObjectArray + ((index / 0x10000) * Offsets::PointerSize));
 
-        return getPtr(Chunk + Offsets::FUObjectItemPad + ((index % 0x10000) * Offsets::FUObjectItemSize));
+        return getPtr(Chunk + Offsets::FUObjectItemPadd +
+                      ((index % 0x10000) * Offsets::FUObjectItemSize));
     } else {
         kaddr FUObjectArray;
         if (deRefGUObjectArray) {
@@ -50,13 +51,18 @@ void DumpObjects(string out) {
     if (obj.is_open()) {
         cout << "Dumping Objects List: " << GetObjectCount() << endl;
         clock_t begin = clock();
-        for (int32 i = 0; i < GetObjectCount(); i++) {
+        int32 ocount = GetObjectCount();
+        cout << "Objects Counts: " << setbase(10) << ocount << endl;
+        if (ocount < 10 || ocount > 999999) {
+            ocount = 300000;
+        }
+        for (int32 i = 0; i < ocount; i++) {
             kaddr uobj = GetUObjectFromID(i);
             if (UObject::isValid(uobj)) {
                 if (isVerbose) {
-                    cout << setbase(10) << "[" << i << "]: " << UObject::getName(uobj) << endl;
+                    cout << setbase(16) << "[0x" << i << "]: " << UObject::getName(uobj) << endl;
                 }
-                obj << setbase(10) << "[" << i << "]:" << endl;
+                obj << setbase(16) << "[0x" << i << "]:" << endl;
                 obj << "Name: " << UObject::getName(uobj).c_str() << endl;
                 obj << "Class: " << UObject::getClassName(uobj).c_str() << endl;
                 obj << "ObjectPtr: 0x" << setbase(16) << uobj << endl;
@@ -68,7 +74,7 @@ void DumpObjects(string out) {
         obj.close();
         clock_t end = clock();
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        cout << count << " Valid Objects Dumped in " << elapsed_secs << "S" << endl;
+        cout << setbase(10) << count << " Valid Objects Dumped in " << elapsed_secs << "S" << endl;
     }
 }
 

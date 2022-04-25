@@ -55,6 +55,14 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
     - 2) Improved String Dumping Output
     - 3) Fixed Verbose Output Not Showing while String Dumping
     - 4) General Improvements to SDK Dumping
+- v0.20:
+    - 1) Merged code from private repo
+    - 2) Few more improvements to SDK Dumping
+    - 3) Added Option to use pointer decryption
+    - 4) Added Support for PUBG New State Mobile
+    - 5) Added GWorld and GName Workaround for PUBGM Series
+    - 6) Offsets are not upto date with latest game versions so please update them yourself
+    - 7) And in the end, this is probably last and final update of UE4Dumper
 
 ## Features
 - No need of Ptrace
@@ -67,6 +75,8 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 - Tested on 32bit and 64bit PUBG Mobile Series
 
 ## Note
+- Only for Educational or Learning Purpose.
+- Project is Deprecated, No more updates in Future.
 - Use 32bit and 64bit Version on Respected Arch of Game.
 - Recommend to use in Training Mode for PUBG Mobile.
 - Some Games with Modified UE4 Might not Dump Correctly.
@@ -83,7 +93,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 	```
     ./ue4dumper -h
 	 
-    UE4Dumper v0.19 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.20 <==> Made By KMODs(kp7742)
     Usage: ./ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series and Other UE4 Based Games
@@ -113,6 +123,7 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
       --gworld <address>                  GWorld Pointer Address
     --Other Args-----------------------------------------------------------------------------
       --newue(Optional)                   Run in UE 4.23+ Mode
+      --ptrdec(Optional)                  Use Pointer Decryption Mode
       --verbose(Optional)                 Show Verbose Output of Dumping
       --derefgname(Optional) <true/false> De-Reference GNames Address(Default: true)
       --derefguobj(Optional) <true/false> De-Reference GUObject Address(Default: false)
