@@ -266,11 +266,11 @@ namespace Offsets {
             ULevelToAActors = 0xA0;
             ULevelToAActorsCount = 0xA8;
         }
-        if (isPUBGLite()) {//GName Fix(0.22)
-            PGLEncSelect = 0x6F38CA4;
-            PGLBlockSlice1 = 0x6F39010;
-            PGLBlockShift = 0x6F38FF1;
-            PGLBlockSlice2 = 0x6F39040;
+        if (isPUBGLite()) {//GName Fix(0.23)
+            PGLEncSelect = 0x6F39BA4;
+            PGLBlockSlice1 = 0x6F39F10;
+            PGLBlockShift = 0x6F39EF1;
+            PGLBlockSlice2 = 0x6F39F40;
         }
         if (isGameOfPeace()) {
             //Class: FNameEntry
