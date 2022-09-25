@@ -274,7 +274,7 @@ namespace Offsets {
         }
         if (isGameOfPeace()) {
             //Class: FNameEntry
-            FNameEntryToNameString = 0xE;
+            FNameEntryToNameString = 0xC;
             //Class: FUObjectArray
             FUObjectArrayToTUObjectArray = 0xB0;
             //Class: TUObjectArray
