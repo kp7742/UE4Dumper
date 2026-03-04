@@ -94,45 +94,43 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
 - Give it executable permission with either 'chmod +x ue4dumper' or 'chmod 755 ue4dumper'
 - Run './ue4dumper -h' For Usage Help
 	```
-    ./ue4dumper -h
-	 
-    UE4Dumper v0.20 <==> Made By KMODs(kp7742)
+    UE4Dumper v0.21 <==> Made By KMODs(kp7742)
     Usage: ./ue4dumper <option(s)>
     Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine
     Tested on PUBG Mobile Series and Other UE4 Based Games
     Options:
     --SDK Dump With GObjectArray Args--------------------------------------------------------
-      --sdku                              Dump SDK with GUObject
-      --gname <address>                   GNames Pointer Address
-      --guobj <address>                   GUObject Pointer Address
+    --sdku                              Dump SDK with GUObject
+    --gname <address>                   GNames Pointer Address
+    --guobj <address>                   GUObject Pointer Address
     --SDK Dump With GWorld Args--------------------------------------------------------------
-      --sdkw                              Dump SDK with GWorld
-      --gname <address>                   GNames Pointer Address
-      --gworld <address>                  GWorld Pointer Address
+    --sdkw                              Dump SDK with GWorld
+    --gname <address>                   GNames Pointer Address
+    --gworld <address>                  GWorld Pointer Address
     --Dump Strings Args----------------------------------------------------------------------
-      --strings                           Dump Strings
-      --gname <address>                   GNames Pointer Address
+    --strings                           Dump Strings
+    --gname <address>                   GNames Pointer Address
     --Dump Objects Args----------------------------------------------------------------------
-      --objs                              Dumping Object List
-      --gname <address>                   GNames Pointer Address
-      --guobj <address>                   GUObject Pointer Address
+    --objs                              Dumping Object List
+    --gname <address>                   GNames Pointer Address
+    --guobj <address>                   GUObject Pointer Address
     --Lib Dump Args--------------------------------------------------------------------------
-      --lib                               Dump libUE4.so from Memory
-      --raw(Optional)                     Output Raw Lib and Not Rebuild It
-      --fast(Optional)                    Enable Fast Dumping(May Miss Some Bytes in Dump)
+    --lib                               Dump libUE4.so from Memory
+    --raw(Optional)                     Output Raw Lib and Not Rebuild It
+    --fast(Optional)                    Enable Fast Dumping(May Miss Some Bytes in Dump)
     --Show ActorList With GWorld Args--------------------------------------------------------
-      --actors                            Show Actors with GWorld
-      --gname <address>                   GNames Pointer Address
-      --gworld <address>                  GWorld Pointer Address
+    --actors                            Show Actors with GWorld
+    --gname <address>                   GNames Pointer Address
+    --gworld <address>                  GWorld Pointer Address
     --Other Args-----------------------------------------------------------------------------
-      --newue(Optional)                   Run in UE 4.23+ Mode
-      --ptrdec(Optional)                  Use Pointer Decryption Mode
-      --verbose(Optional)                 Show Verbose Output of Dumping
-      --derefgname(Optional) <true/false> De-Reference GNames Address(Default: true)
-      --derefguobj(Optional) <true/false> De-Reference GUObject Address(Default: false)
-      --package <packageName>             Package Name of App(Default: com.tencent.ig)
-      --output <outputPath>               File Output path(Default: /sdcard)
-      --help                              Display this information
+    --newue(Optional)                   Run in UE 4.23+ Mode
+    --ptrdec(Optional)                  Use Pointer Decryption Mode
+    --verbose(Optional)                 Show Verbose Output of Dumping
+    --derefgname(Optional) <true/false> De-Reference GNames Address(Default: true)
+    --derefguobj(Optional) <true/false> De-Reference GUObject Address(Default: false)
+    --package <packageName>             Package Name of App(Default: com.tencent.ig)
+    --output <outputPath>               File Output path
+    --help                              Display this information
 	```
 	
 ## How to Build
