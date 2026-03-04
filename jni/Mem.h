@@ -33,14 +33,14 @@ pid_t find_pid(const char *process_name) {
     char cmdline[256];
 
     struct dirent *entry;
-    if (process_name == NULL) {
+    if (process_name == nullptr) {
         return -1;
     }
     dir = opendir("/proc");
-    if (dir == NULL) {
+    if (dir == nullptr) {
         return -1;
     }
-    while ((entry = readdir(dir)) != NULL) {
+    while ((entry = readdir(dir)) != nullptr) {
         id = atoi(entry->d_name);
         if (id != 0) {
             sprintf(filename, "/proc/%d/cmdline", id);
@@ -121,38 +121,40 @@ T Read(kaddr address) {
 }
 
 template<typename T>
+T Read(kaddr address, T def) {
+    T data = def;
+    vm_readv(reinterpret_cast<void*>(address), reinterpret_cast<void*>(&data), sizeof(T));
+    return data;
+}
+
+template<typename T>
 void Write(kaddr address, T data) {
     vm_writev(reinterpret_cast<void *>(address), reinterpret_cast<void *>(&data), sizeof(T));
 }
 
 template<typename T>
 T *ReadArr(kaddr address, unsigned int size) {
-    T *data = new T[size];
-    vm_readv(reinterpret_cast<void *>(address), reinterpret_cast<void *>(data), (sizeof(T) * size));
-    return data;
+    T *ptr = new T[size];
+    vm_readv(reinterpret_cast<void *>(address), reinterpret_cast<void *>(ptr), (sizeof(T) * size));
+    return ptr;
 }
 
 string ReadStr(kaddr address, unsigned int size) {
     char *data = new char[size];
     memset(data, '\0', size);
 
-    for (int i = 0; i < size; i++) {
-        vm_readv((void *) (address + (sizeof(char) * i)), (void *) (&data[0] + i), sizeof(char));
-        if (data[i] == 0x0) {
+    vm_readv((void *) address, (void *) data, size * sizeof(char));
+
+    unsigned int ns;
+    for (ns = 0; ns < size; ns++) {
+        if (data[ns] == 0x0) {
             break;
         }
     }
 
-    string name(data);
-    name.shrink_to_fit();
-    return name;
-}
-
-string ReadStr2(kaddr address, unsigned int size) {
-    string name(size, '\0');
-    vm_readv((void *) address, (void *) name.data(), size * sizeof(char));
-    name.shrink_to_fit();
-    return name;
+    auto res = string(data, ns);
+    delete[] data;
+    return res;
 }
 
 kaddr getPtr(kaddr address) {
@@ -188,49 +190,40 @@ void HexDump(kaddr addr, int lines, kaddr offset = 0x0) {
     }
 }
 
-void HexDump1B(kaddr addr, int lines) {
+void HexDump1B(kaddr addr, int lines){
     printf("\n\t\t:Hex Dump:\n\n");
-    int ptr = 0;
-    for (int i = 0; i < lines; i++) {
-        uint8 data1 = Read<uint8>(addr + ptr);
-        ptr++;
-        uint8 data2 = Read<uint8>(addr + ptr);
-        ptr++;
-        uint8 data3 = Read<uint8>(addr + ptr);
-        ptr++;
-        uint8 data4 = Read<uint8>(addr + ptr);
-        ptr++;
-        uint8 data5 = Read<uint8>(addr + ptr);
-        ptr++;
-        uint8 data6 = Read<uint8>(addr + ptr);
-        ptr++;
-        uint8 data7 = Read<uint8>(addr + ptr);
-        ptr++;
-        uint8 data8 = Read<uint8>(addr + ptr);
-        ptr++;
+    int ptr=0;
+    for(int i=0;i<lines;i++) {
+        auto data1 = Read<uint8>(addr + (ptr++), 0);
+        auto data2 = Read<uint8>(addr + (ptr++), 0);
+        auto data3 = Read<uint8>(addr + (ptr++), 0);
+        auto data4 = Read<uint8>(addr + (ptr++), 0);
+        auto data5 = Read<uint8>(addr + (ptr++), 0);
+        auto data6 = Read<uint8>(addr + (ptr++), 0);
+        auto data7 = Read<uint8>(addr + (ptr++), 0);
+        auto data8 = Read<uint8>(addr + (ptr++), 0);
 #if defined(__LP64__)
-        printf("(%d) 0x%04lx: 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx",
-               i + 1, addr + (i * 8), data1, data2, data3, data4,
+        printf("(%d) 0x%04lx: 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx 0x%02hhx", i+1, addr + (i*8), data1, data2, data3, data4,
                data5, data6, data7, data8);
 #else
         printf("(%d) 0x%04x: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x", i+1, addr + (i*8), data1, data2, data3, data4,
-               data5, data6, data7, data8);
+			   data5, data6, data7, data8);
 #endif
         printf("\n");
     }
     printf("\n");
 }
 
-void HexDump4B(kaddr addr, int lines) {
+void HexDump4B(kaddr addr, int lines){
     printf("\n\t\t:Hex Dump:\n\n");
-    int ptr = 0;
-    for (int i = 0; i < lines; i++) {
-        uint32 data1 = Read<uint32>(addr + ptr);
+    int ptr=0;
+    for(int i=0;i<lines;i++) {
+        auto data1 = Read<uint32>(addr + ptr, 0);
         ptr += 4;
-        uint32 data2 = Read<uint32>(addr + ptr);
+        auto data2 = Read<uint32>(addr + ptr, 0);
         ptr += 4;
 #if defined(__LP64__)
-        printf("(%d) 0x%lx: 0x%04x 0x%04x", i + 1, addr + (i * 8), data1, data2);
+        printf("(%d) 0x%lx: 0x%04x 0x%04x", i+1, addr + (i*8), data1, data2);
 #else
         printf("(%d) 0x%x: 0x%04x 0x%04x", i+1, addr + (i*8), data1, data2);
 #endif
@@ -239,18 +232,18 @@ void HexDump4B(kaddr addr, int lines) {
     printf("\n");
 }
 
-void HexDump8B(kaddr addr, int lines) {
+void HexDump8B(kaddr addr, int lines){
     printf("\n\t\t:Hex Dump:\n\n");
-    int ptr = 0;
-    for (int i = 0; i < lines; i++) {
-        uint64 data1 = Read<uint64>(addr + ptr);
+    int ptr=0;
+    for(int i=0;i<lines;i++) {
+        auto data1 = Read<uint64>(addr + ptr, 0);
         ptr += 8;
-        uint64 data2 = Read<uint64>(addr + ptr);
+        auto data2 = Read<uint64>(addr + ptr, 0);
         ptr += 8;
 #if defined(__LP64__)
-        printf("(%d) 0x%lx: 0x%llx 0x%llx", i + 1, addr + (i * 8), data1, data2);
+        printf("(%d) 0x%lx: 0x%llx 0x%llx", i+1, addr + (i*16), data1, data2);
 #else
-        printf("(%d) 0x%x: 0x%llx 0x%llx", i+1, addr + (i*8), data1, data2);
+        printf("(%d) 0x%x: 0x%llx 0x%llx", i+1, addr + (i*16), data1, data2);
 #endif
         printf("\n");
     }
@@ -258,18 +251,21 @@ void HexDump8B(kaddr addr, int lines) {
 }
 
 // rotate left
-template<class T>
-T __ROL__(T value, int count) {
+template<class T> T __ROL__(T value, int count)
+{
     const uint nbits = sizeof(T) * 8;
 
-    if (count > 0) {
+    if ( count > 0 )
+    {
         count %= nbits;
         T high = value >> (nbits - count);
-        if (T(-1) < 0) // signed value
+        if ( T(-1) < 0 ) // signed value
             high &= ~((T(-1) << count));
         value <<= count;
         value |= high;
-    } else {
+    }
+    else
+    {
         count = -count % nbits;
         T low = value << (nbits - count);
         value >>= count;
@@ -278,20 +274,13 @@ T __ROL__(T value, int count) {
     return value;
 }
 
-inline uint8 __ROL1__(uint8 value, int count) { return __ROL__((uint8) value, count); }
-
-inline uint16 __ROL2__(uint16 value, int count) { return __ROL__((uint16) value, count); }
-
-inline uint32 __ROL4__(uint32 value, int count) { return __ROL__((uint32) value, count); }
-
-inline uint64 __ROL8__(uint64 value, int count) { return __ROL__((uint64) value, count); }
-
-inline uint8 __ROR1__(uint8 value, int count) { return __ROL__((uint8) value, -count); }
-
-inline uint16 __ROR2__(uint16 value, int count) { return __ROL__((uint16) value, -count); }
-
-inline uint32 __ROR4__(uint32 value, int count) { return __ROL__((uint32) value, -count); }
-
-inline uint64 __ROR8__(uint64 value, int count) { return __ROL__((uint64) value, -count); }
+inline uint8  __ROL1__(uint8  value, int count) { return __ROL__((uint8)value, count); }
+inline uint16 __ROL2__(uint16 value, int count) { return __ROL__((uint16)value, count); }
+inline uint32 __ROL4__(uint32 value, int count) { return __ROL__((uint32)value, count); }
+inline uint64 __ROL8__(uint64 value, int count) { return __ROL__((uint64)value, count); }
+inline uint8  __ROR1__(uint8  value, int count) { return __ROL__((uint8)value, -count); }
+inline uint16 __ROR2__(uint16 value, int count) { return __ROL__((uint16)value, -count); }
+inline uint32 __ROR4__(uint32 value, int count) { return __ROL__((uint32)value, -count); }
+inline uint64 __ROR8__(uint64 value, int count) { return __ROL__((uint64)value, -count); }
 
 #endif //MEMORY_H

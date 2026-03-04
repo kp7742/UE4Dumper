@@ -2,32 +2,37 @@
 Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Game Process and Generate Structure SDK of Supported Game in Android. You can Find Latest Dumped SDK from [HERE](https://github.com/kp7742/UE4Dumper/tree/master/SDKs/)
 
 ## Changelog
-- v0.1: First Release
-- v0.2: Experimental 64bit Support Added
-- v0.3:
-    - 1) Fix Object Iteration Issue during Dumping SDK 
-    - 2) Added Support to Resolve Arrays, Sets and Maps Structure
-- v0.4:
-    - 1) Expanded 64bit Support,
-    - 2) Fixed 64bit Library Rebuilding Not Working
-    - 3) Added New Elf Dump Fix for 64bit Library
-    - 4) Added Option to Dump SDK with GWorld
-    - 5) Updated Usage Text
-- v0.5: Added Support to Resolve Functions
-- v0.6:
-    - 1) Added Support for UE 4.23+ Games for Strings and Objects(Use new Option: --newue)
-    - 2) Added 64bit Offsets to Fix 64bit Support
-    - 3) Updated SDK Generation Method for Faster Dumping
-    - 4) Short Options has been remove due to conflict with new options
-- v0.7: Fixed Object Dumping issue for PUBG CN(Tested on GFP v1.8.10)
-- v0.8: Fixed 64bit Support for Latest PUBG Version
-- v0.9: Fixed Dumping issue with 64bit PUBG
-- v0.10:
-    - 1) Added Option to Print Actors of Main Level(Use new Option: --actors)
-    - 2) Support for PUBG CN(GFP) Fixed(Tested on GFP v1.9.10)
-    - 3) Fixed Some Offsets Issues due to Modified UE4 Versions
-    - 4) Offsets System Updated to Work with Other games, other then PUBG
-- v0.11: Fixed Dumping issue with 64bit PUBG Lite
+- v0.21:
+    - 1) Merged code from private repo
+    - 2) Added Support for Farlight84 Mobile
+    - 3) Improved UTF16 to UTF8 string conversion
+    - 4) And in the end, this is probably last and final update of UE4Dumper
+- v0.20:
+    - 1) Few more improvements to SDK Dumping
+    - 2) Added Option to use pointer decryption
+    - 3) Added Support for PUBG New State Mobile
+    - 4) Added GWorld and GName Workaround for PUBGM Series
+    - 5) Offsets are not upto date with latest game versions so please update them yourself
+- v0.19:
+    - 1) Fixed Object Dumping issue with PUBG CN
+    - 2) Improved String Dumping Output
+    - 3) Fixed Verbose Output Not Showing while String Dumping
+    - 4) General Improvements to SDK Dumping
+- v0.18:
+    - 1) Fixed Dumping issue with 64bit PUBG CN
+    - 2) Fixed Another Issue with String Dumping
+- v0.17:
+    - 1) Fixed Crash with Deref Options
+    - 2) Fixed Issue with Wide String Dumping
+- v0.16: Fixed Dumping issue with 64bit PUBG Lite
+- v0.15:
+    - 1) Fixed Struct Property Dumping
+    - 2) Experimental Wide String Support Added for UE 4.23+ Mode
+- v0.14: Fixed Support for Battlegrounds Mobile India
+- v0.13:
+    - 1) Fixed String Reading for Objects for UE 4.23+ Mode
+    - 2) Fixed SDK Dumping Issue Due to Invalid UStruct
+    - 3) Added Offset Support for Fortnite Mobile
 - v0.12:
     - 1) Fixed Offsets for UE 4.23+ Mode
     - 2) Fixed SDK Dumping for UE 4.23+ Mode
@@ -35,34 +40,32 @@ Unreal Engine 4 Dumper for Android Devices, Dump Lib libUE4.so from Memory of Ga
     - 4) Added Offset Support for Apex Legends Mobile
     - 5) Added Option to Detour or De-Reference GNames, GUObject Addresses
     - 6) Added Option to See Verbose Output of String, Object and SDK Dumping
-- v0.13:
-    - 1) Fixed String Reading for Objects for UE 4.23+ Mode
-    - 2) Fixed SDK Dumping Issue Due to Invalid UStruct
-    - 3) Added Offset Support for Fortnite Mobile
-- v0.14: Fixed Support for Battlegrounds Mobile India
-- v0.15:
-    - 1) Fixed Struct Property Dumping
-    - 2) Experimental Wide String Support Added for UE 4.23+ Mode
-- v0.16: Fixed Dumping issue with 64bit PUBG Lite
-- v0.17:
-    - 1) Fixed Crash with Deref Options
-    - 2) Fixed Issue with Wide String Dumping
-- v0.18:
-    - 1) Fixed Dumping issue with 64bit PUBG CN
-    - 2) Fixed Another Issue with String Dumping
-- v0.19:
-    - 1) Fixed Object Dumping issue with PUBG CN
-    - 2) Improved String Dumping Output
-    - 3) Fixed Verbose Output Not Showing while String Dumping
-    - 4) General Improvements to SDK Dumping
-- v0.20:
-    - 1) Merged code from private repo
-    - 2) Few more improvements to SDK Dumping
-    - 3) Added Option to use pointer decryption
-    - 4) Added Support for PUBG New State Mobile
-    - 5) Added GWorld and GName Workaround for PUBGM Series
-    - 6) Offsets are not upto date with latest game versions so please update them yourself
-    - 7) And in the end, this is probably last and final update of UE4Dumper
+- v0.11: Fixed Dumping issue with 64bit PUBG Lite
+- v0.10:
+    - 1) Added Option to Print Actors of Main Level(Use new Option: --actors)
+    - 2) Support for PUBG CN(GFP) Fixed(Tested on GFP v1.9.10)
+    - 3) Fixed Some Offsets Issues due to Modified UE4 Versions
+    - 4) Offsets System Updated to Work with Other games, other then PUBG
+- v0.9: Fixed Dumping issue with 64bit PUBG
+- v0.8: Fixed 64bit Support for Latest PUBG Version
+- v0.7: Fixed Object Dumping issue for PUBG CN(Tested on GFP v1.8.10)
+- v0.6:
+    - 1) Added Support for UE 4.23+ Games for Strings and Objects(Use new Option: --newue)
+    - 2) Added 64bit Offsets to Fix 64bit Support
+    - 3) Updated SDK Generation Method for Faster Dumping
+    - 4) Short Options has been remove due to conflict with new options
+- v0.5: Added Support to Resolve Functions
+- v0.4:
+    - 1) Expanded 64bit Support,
+    - 2) Fixed 64bit Library Rebuilding Not Working
+    - 3) Added New Elf Dump Fix for 64bit Library
+    - 4) Added Option to Dump SDK with GWorld
+    - 5) Updated Usage Text
+- v0.3:
+    - 1) Fix Object Iteration Issue during Dumping SDK 
+    - 2) Added Support to Resolve Arrays, Sets and Maps Structure
+- v0.2: Experimental 64bit Support Added
+- v0.1: First Release
 
 ## Features
 - No need of Ptrace

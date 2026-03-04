@@ -154,8 +154,8 @@ uint32 classCount = 0;
 vector<uint32> structIDMap;
 
 bool isScanned(uint32 id) {
-    for (int i = 0; i < structIDMap.size(); i++) {
-        if (structIDMap[i] == id) { return true; }
+    for (unsigned int i : structIDMap) {
+        if (i == id) { return true; }
     }
     return false;
 }
@@ -292,7 +292,7 @@ list<kaddr> writeStructChild(ofstream &sdk, kaddr childprop) {
                 << "Size: 0x" << setbase(16) << UProperty::getElementSize(prop) << "]" << endl;
         } else if (isStartWith(cname, "Function") || isEqual(cname, "DelegateFunction")) {
             string returnVal = "void";
-            string params = "";
+            string params;
 
             kaddr funcParam = UStruct::getChildren(prop);
             while (funcParam) {
@@ -507,7 +507,7 @@ list<kaddr> writeStructChild423_Func(ofstream &sdk, kaddr childprop) {
 
         if (isStartWith(cname, "Function") || isEqual(cname, "DelegateFunction")) {
             string returnVal = "void";
-            string params = "";
+            string params;
 
             kaddr funcParam = UStruct::getChildProperties(prop);
             while (funcParam) {
@@ -571,14 +571,27 @@ list<kaddr> writeStructChild423_Func(ofstream &sdk, kaddr childprop) {
     return recurrce;
 }
 
+std::string string_to_hex(const std::string& input)
+{
+    static const char hex_digits[] = "0123456789ABCDEF";
+
+    std::string output;
+    output.reserve(input.length() * 2);
+    for (unsigned char c : input)
+    {
+        output.push_back(hex_digits[c >> 4]);
+        output.push_back(hex_digits[c & 15]);
+    }
+    return output;
+}
+
 void writeStruct(ofstream &sdk, kaddr clazz) {
     list<kaddr> recurrce;
 
     kaddr currStruct = clazz;
     while (UObject::isValid(currStruct)) {
         string name = UObject::getName(currStruct);
-        if (isEqual(name, "None") || isContain(name, "/Game/") || isContain(name, "_png") ||
-            name.empty()) {
+        if (isStartWith(name, "None") || isContain(name, "/Game/") || isContain(name, "_png") || name.empty()) {
             break;
         }
 
@@ -586,7 +599,9 @@ void writeStruct(ofstream &sdk, kaddr clazz) {
         if (!isScanned(NameID)) {
             //Verbose Output
             if (isVerbose) {
+                cout << "Obj: 0x" << std::hex << currStruct << std::dec << endl;
                 cout << "Name: " << name << endl;
+                cout << "NameID: 0x" << std::hex << NameID << std::dec << endl;
                 cout << "Class: " << UStruct::getStructClassPath(currStruct) << endl;
                 cout << endl;
             }
@@ -611,14 +626,19 @@ void writeStruct(ofstream &sdk, kaddr clazz) {
         writeStruct(sdk, *it);
 }
 
-void DumpSDK(string out) {
+void DumpSDK(const string& out) {
     ofstream sdk(out + "/SDK.txt", ofstream::out);
     if (sdk.is_open()) {
         cout << "Dumping SDK List" << endl;
         clock_t begin = clock();
         int32 oCount = GetObjectCount();
+        kaddr guobj = getRealOffset(Offsets::GUObjectArray);
+        if (deRefGUObjectArray) {
+            guobj = getPtr(guobj);
+        }
+        cout << "GUObjectArray: " << setbase(16) << guobj << endl;
         cout << "Objects Counts: " << setbase(10) << oCount << endl;
-        if (oCount < 10 || oCount > 999999) {
+        if(oCount < 10 || oCount > 999999){
             oCount = 300000;
         }
         for (int32 i = 0; i < oCount; i++) {
@@ -630,14 +650,13 @@ void DumpSDK(string out) {
         sdk.close();
         clock_t end = clock();
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        cout << setbase(10) << classCount << " Items Dumped in SDK in " << elapsed_secs << "S"
-             << endl;
+        cout << setbase(10) << classCount << " Items Dumped in SDK in " << elapsed_secs << "S" << endl;
     }
 }
 
 void TestDump(kaddr uobj);
 
-void DumpSDKW(string out) {
+void DumpSDKW(const string& out) {
     ofstream sdk(out + "/SDK.txt", ofstream::out);
     if (sdk.is_open()) {
         cout << "Dumping SDK List" << endl;
@@ -673,11 +692,11 @@ void TestDump(kaddr uobj) {
     cout << "Outer: " << UObject::getName(UObject::getOuter(uobj)) << endl;
     cout << "ClassPath: " << UStruct::getClassPath(uobj) << endl;
 
-    //HexDump(uobj, 40);
+    // HexDump(uobj, 40);printf("\n\n");
 
     kaddr clazz = UObject::getClass(uobj);
 
-    HexDump(clazz, 50);
+    // HexDump(clazz, 50);printf("\n\n");
 
     if (isUE423) {
         //Props
@@ -685,7 +704,7 @@ void TestDump(kaddr uobj) {
         while (child) {
             cout << setbase(16) << "0x" << child << " - " << FField::getName(child) << " - "
                  << FField::getClassName(child) << " - 0x" << UProperty::getOffset(child) << " - 0x"
-                 << setbase(16) << UProperty::getElementSize(child) << ";" << endl;
+                 << setbase(16) << UProperty::getArrayDim(child) << " - 0x" << UProperty::getElementSize(child) << ";" << endl;
 
             //HexDump(child, 40);
 
@@ -700,6 +719,15 @@ void TestDump(kaddr uobj) {
                  " - 0x" << UFunction::getFunc(child) - libbase << ";" << endl;
 
             //HexDump(child, 40);
+
+            kaddr funcParam = UStruct::getChildProperties(child);
+            while (funcParam) {
+                cout << "\t" << setbase(16) << "0x" << child << " - " << FField::getName(funcParam) << " - "
+                     << FField::getClassName(funcParam) << " - 0x" << UProperty::getOffset(funcParam) << " - 0x"
+                     << setbase(16) << UProperty::getArrayDim(funcParam) << " - 0x" << UProperty::getElementSize(funcParam) << ";" << endl;
+
+                funcParam = FField::getNext(funcParam);
+            }
 
             child = UField::getNext(child);
         }
@@ -721,11 +749,24 @@ void DumpActors() {
     kaddr gworld = UWorld::getGWorld();
     kaddr world = getPtr(gworld);
 
+    // kaddr vtable = getPtr(world);
+    //
+    // for(kaddr i = 0; i < 0x100; i++){
+    //     kaddr fnAddr = getPtr(vtable + (i * Offsets::PointerSize)) - libbase;
+    //     printf("VTable[0x%lx]: 0x%lx\n", i, fnAddr);
+    // }
+
+    // TestDump(world);
+
     cout << "UWorld: " << setbase(16) << gworld << " | World: " << world << " | Name: "
          << UObject::getName(world) << endl;
 
+    // HexDump(world, 40, 0x0);
+
     kaddr level = getPtr(world + Offsets::UWorldToPersistentLevel);
     cout << "Level: " << setbase(16) << level << " | Name: " << UObject::getName(level) << endl;
+
+    //HexDump(level + 0x90, 60, 0x90);
 
     kaddr actorList = getPtr(level + Offsets::ULevelToAActors);
     int actorsCount = Read<int>(level + Offsets::ULevelToAActorsCount);

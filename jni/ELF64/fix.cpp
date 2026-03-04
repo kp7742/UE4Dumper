@@ -51,7 +51,7 @@ static void _fix_relative_rebase(char *buffer, size_t bufSize, uint64_t imageBas
             unsigned *offIntBuf = (unsigned*)(buffer+off);
             if (border < (const char*)offIntBuf) {
             	uint64_t tmp = off;
-                printf("relocation off %llx invalid, out of border...\n", tmp);
+                printf("relocation off %lx invalid, out of border...\n", tmp);
 				continue;
             }
             unsigned addrNow = *offIntBuf;
@@ -140,7 +140,7 @@ static void _regen_section_header(const Elf_Ehdr_Type *pehdr, const char *buffer
 	}
 	if (maxLoad > len) {
 		//加载的范围大于整个dump下来的so，有问题，先警告
-		printf("warning load size [%u] is bigger than so size [%u], dump maybe incomplete!!!\n", maxLoad, len);
+		printf("warning load size [%u] is bigger than so size [%zu], dump maybe incomplete!!!\n", maxLoad, len);
 		//TODO:should we fix it???
 	}
 
@@ -352,7 +352,7 @@ static void _regen_section_header(const Elf_Ehdr_Type *pehdr, const char *buffer
 			case DT_INIT: {
 				//找到init段代码，但是无法知道有多长，只好做一个警告，提醒使用者init段存在，脱壳代码可能存在这里
 				uint64_t tmp = dyn[i].d_un.d_ptr;
-				printf("warning .init exist at 0x%016llx\n", tmp);
+				printf("warning .init exist at 0x%016lx\n", tmp);
 				break;
 			}
 			case DT_TEXTREL:
@@ -605,10 +605,8 @@ int fix_so(const char *openPath, const char *outPutPath, uint64_t ptrbase)
 	}
 
 	printf("fixed so has write to %s\n", outPutPath);
-	if(fw != NULL)
-		fclose(fw);
-	if(fr != NULL)
-		fclose(fr);
+    fclose(fw);
+    fclose(fr);
 	free(buffer);
 	return 0;
 }

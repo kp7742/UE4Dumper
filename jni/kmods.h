@@ -16,13 +16,16 @@
 #include <iomanip>
 #include <fstream>
 #include <getopt.h>
+#include <codecvt>
 
 #include "Log.h"
 #include "Process.h"
 #include "Mem.h"
 
 #if defined(__LP64__)
+
 #include "ELF64/fix.h"
+
 #else
 #include "ELF/ElfReader.h"
 #include "ELF/ElfRebuilder.h"
@@ -30,6 +33,7 @@
 
 bool isUE423 = false;
 bool isPUBGNS = false;
+bool isPUBGCN = false;
 bool isPGLite = false;
 bool isPtrDec = false;
 bool isVerbose = false;
@@ -38,7 +42,7 @@ bool deRefGUObjectArray = false;
 string pkg("com.tencent.ig");
 static const char *lib_name = "libUE4.so";
 
-bool isStartWith(string str, const char *check) {
+bool isStartWith(const string& str, const char *check) {
     return (str.rfind(check, 0) == 0);
 }
 
@@ -46,16 +50,16 @@ bool isEqual(char *s1, const char *s2) {
     return (strcmp(s1, s2) == 0);
 }
 
-bool isEqual(string s1, const char *check) {
+bool isEqual(const string& s1, const char *check) {
     string s2(check);
     return (s1 == s2);
 }
 
-bool isEqual(string s1, string s2) {
+bool isEqual(const string& s1, const string& s2) {
     return (s1 == s2);
 }
 
-bool isContain(string str, string check) {
+bool isContain(const string& str, const string& check) {
     size_t found = str.find(check);
     return (found != string::npos);
 }
@@ -72,6 +76,10 @@ bool isASCII(const string &s) {
 
 bool isApexLegends() {
     return isEqual(pkg, "com.ea.gp.apexlegendsmobilefps");
+}
+
+bool isFarlight84() {
+    return isEqual(pkg, "com.miraclegames.farlight84");
 }
 
 bool isFortnite() {

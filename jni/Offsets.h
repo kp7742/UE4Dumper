@@ -163,7 +163,7 @@ namespace Offsets {
     }
 
     void patchCustom_32() {
-        if (isPUBGLite()) {//GName Fix(0.22)
+        if(isPUBGLite()){//GName Fix
             PGLEncSelect = 0x4EEDD74;
             PGLBlockSlice1 = 0x4F6DE98;
             PGLBlockShift = 0x4F6DE89;
@@ -258,32 +258,72 @@ namespace Offsets {
 
     void patchCustom_64() {
         if (isPUBGSeries()) {
-            if (!isPUBGLite()) {
+            if(!isPUBGLite()) {
                 //Class: FNameEntry
                 FNameEntryToNameString = 0xC;
             }
+            // //Class: UField
+            // UFieldToNext = 0x30;
+            // //Class: UStruct
+            // UStructToSuperStruct = 0x38;
+            // UStructToChildren = 0x40;
+            // //Class: UFunction
+            // UFunctionToFunctionFlags = 0x90;
+            // UFunctionToFunc = 0xB8;
+            // //Class: UProperty
+            // UPropertyToElementSize = 0x3C;
+            // UPropertyToPropertyFlags = 0x40;
+            // UPropertyToOffsetInternal = 0x4C;
+            // //Class: UBoolProperty
+            // UBoolPropertyToFieldSize = 0x78;
+            // UBoolPropertyToByteOffset = 0x79;
+            // UBoolPropertyToByteMask = 0x7A;
+            // UBoolPropertyToFieldMask = 0x7B;
+            // //Class: UObjectProperty
+            // UObjectPropertyToPropertyClass = 0x78;
+            // //Class: UClassProperty
+            // UClassPropertyToMetaClass = 0x80;
+            // //Class: UInterfaceProperty
+            // UInterfacePropertyToInterfaceClass = 0x80;
+            // //Class: UArrayProperty
+            // UArrayPropertyToInnerProperty = 0x78;
+            // //Class: UMapProperty
+            // UMapPropertyToKeyProp = 0x78;
+            // UMapPropertyToValueProp = 0x80;
+            // //Class: USetProperty
+            // USetPropertyToElementProp = 0x78;
+            // //Class: UStructProperty
+            // UStructPropertyToStruct = 0x78;
+            // //Class: UWorld
+            // UWorldToPersistentLevel = 0x38;
+            // //Class: ULevel
+            // ULevelToAActors = 0xA8;
+            // ULevelToAActorsCount = 0xB0;
+
             //Class: ULevel
             ULevelToAActors = 0xA0;
             ULevelToAActorsCount = 0xA8;
         }
-        if (isPUBGLite()) {//GName Fix(0.23)
-            PGLEncSelect = 0x6F39BA4;
-            PGLBlockSlice1 = 0x6F39F10;
-            PGLBlockShift = 0x6F39EF1;
-            PGLBlockSlice2 = 0x6F39F40;
+        if(isPUBGLite()){//GName Fix
+            PGLEncSelect = 0x6FAA944;//0x6F38CA4;
+            PGLBlockSlice1 = 0x6FAACB0;//0x6F39010;
+            PGLBlockShift = 0x6FAAC91;//0x6F38FF1;
+            PGLBlockSlice2 = 0x6FAACE0;//0x6F39040;
         }
         if (isGameOfPeace()) {
             //Class: FNameEntry
             FNameEntryToNameString = 0xC;
             //Class: FUObjectArray
-            FUObjectArrayToTUObjectArray = 0xB0;
+            FUObjectArrayToTUObjectArray = 0xC8;
             //Class: TUObjectArray
-            TUObjectArrayToNumElements = 0x14;
+            TUObjectArrayToNumElements = 0x38;
+            //Class: UWorld
+            UWorldToPersistentLevel = 0x90;
             //Class: ULevel
             ULevelToAActors = 0xA0;
             ULevelToAActorsCount = 0xA8;
         }
-        if (isPUBGNewState()) {
+        if(isPUBGNewState()){
             FUObjectItemPadd = 0x8;//0x10//0x8//0x10
             //Class: FNamePool
             GNamesToFNamePool = 0x18A0;//0x24A8//0x3CE0
@@ -344,6 +384,43 @@ namespace Offsets {
             UWorldToPersistentLevel = 0x58;
         }
         if (isFortnite()) {
+            //Class: UStruct
+            UStructToSuperStruct = 0x40;
+            UStructToChildren = 0x48;
+            UStructToChildProperties = 0x50;
+            //Class: UProperty
+            UPropertyToElementSize = 0x38;
+            UPropertyToPropertyFlags = 0x40;
+            UPropertyToOffsetInternal = 0x4C;
+            //Class: UFunction
+            UFunctionToFunctionFlags = 0xB0;
+            UFunctionToFunc = 0xD8;
+            //Class: UBoolProperty
+            UBoolPropertyToFieldSize = 0x78;
+            UBoolPropertyToByteOffset = 0x79;
+            UBoolPropertyToByteMask = 0x7A;
+            UBoolPropertyToFieldMask = 0x7B;
+            //Class: UObjectProperty
+            UObjectPropertyToPropertyClass = 0x78;
+            //Class: UClassProperty
+            UClassPropertyToMetaClass = 0x80;
+            //Class: UInterfaceProperty
+            UInterfacePropertyToInterfaceClass = 0x80;
+            //Class: UArrayProperty
+            UArrayPropertyToInnerProperty = 0x78;
+            //Class: UMapProperty
+            UMapPropertyToKeyProp = 0x78;
+            UMapPropertyToValueProp = 0x80;
+            //Class: USetProperty
+            USetPropertyToElementProp = 0x78;
+            //Class: UStructProperty
+            UStructPropertyToStruct = 0x78;
+        }
+        if(isFarlight84()){
+            //Class: FUObjectArray
+            FUObjectArrayToTUObjectArray = 0x18;
+            //Class: TUObjectArray
+            TUObjectArrayToNumElements = 0x14;
             //Class: UStruct
             UStructToSuperStruct = 0x40;
             UStructToChildren = 0x48;

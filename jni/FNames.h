@@ -24,9 +24,9 @@ struct WideStr {
     }
 
     static wchar_t *w_str(kaddr str, size_t len) {
-        wchar_t *output = new wchar_t[len + 1];
+        auto *output = new wchar_t[len + 1];
 
-        UTF16 *source = ReadArr<UTF16>(str, len);
+        auto *source = ReadArr<UTF16>(str, len);
 
         for (int i = 0; i < len; i++) {
             const UTF16 uc = source[i];
@@ -40,20 +40,26 @@ struct WideStr {
             }
         }
 
-        free(source);
-
         output[len] = L'\0';
         return output;
     }
 
     static string getString(kaddr StrPtr, int StrLength) {
-        wstring str = w_str(StrPtr, StrLength);
-
-        string result(MAX_SIZE, '\0');
-
-        wcstombs((char *) result.data(), str.c_str(), MAX_SIZE);
-
-        return result;
+        wchar_t *str = w_str(StrPtr, StrLength);
+        //
+        // string result(MAX_SIZE, '\0');
+        //
+        // wcstombs((char *) result.data(), str, MAX_SIZE);
+        //
+        // free(str);
+        //
+        // return result;
+        // auto *source = ReadArr<char16_t>(StrPtr, StrLength);
+        //
+        // std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> convert;
+        // return convert.to_bytes(std::u16string(source, source + StrLength));
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        return converter.to_bytes(str);
     }
 };
 
@@ -68,7 +74,7 @@ string GetFNameFromID(uint32 index) {
                 FNamePool + Offsets::FNamePoolToBlocks + (Block * Offsets::PointerSize));
         kaddr FNameEntry = NamePoolChunk + (Offsets::FNameStride * Offset);
 
-        int16 FNameEntryHeader = Read<int16>(FNameEntry);
+        auto FNameEntryHeader = Read<int16>(FNameEntry);
         kaddr StrPtr = FNameEntry + Offsets::FNameEntryToString;
         int StrLength = FNameEntryHeader >> Offsets::FNameEntryToLenBit;
 
@@ -78,7 +84,7 @@ string GetFNameFromID(uint32 index) {
             if (wide) {
                 return WideStr::getString(StrPtr, StrLength);
             } else {
-                return ReadStr2(StrPtr, StrLength);
+                return ReadStr(StrPtr, StrLength);
             }
         } else {
             return "None";
@@ -86,19 +92,19 @@ string GetFNameFromID(uint32 index) {
     } else {
         static kaddr TNameEntryArray;
 
-        if (TNameEntryArray) {//As usual caching ;)
+        if(TNameEntryArray){
             goto gotGName;
         }
 
-        if (isPtrDec) {
-            if (isPGLite) {
-                uint32 modeSel = Read<uint32>(getRealOffset(Offsets::PGLEncSelect));
+        if (isPtrDec && !isPUBGCN) {
+            if(isPGLite) {
+                auto modeSel = Read<uint32>(getRealOffset(Offsets::PGLEncSelect));
                 if (modeSel) {
                     kaddr blockSlice = getPtr(getRealOffset(Offsets::PGLBlockSlice1));
                     if (blockSlice) {
                         kaddr block = getPtr(blockSlice + (Offsets::PointerSize * 5));
 
-                        uint8 shift = Read<uint8>(getRealOffset(Offsets::PGLBlockShift));
+                        auto shift = Read<uint8>(getRealOffset(Offsets::PGLBlockShift));
                         kaddr offset = Offsets::PointerSize * (shift + 5);
 
                         kaddr encGName = getPtr(block + offset);
@@ -116,7 +122,7 @@ string GetFNameFromID(uint32 index) {
                     if (blockSlice && Read<int>(blockSlice + 0x4)) {
                         kaddr block = getPtr(blockSlice + 0x8);
 
-                        uint32 shift = Read<uint32>(blockSlice);
+                        auto shift = Read<uint32>(blockSlice);
                         uint32 offset = (Offsets::PointerSize * 2) * (((shift - 0x64) / 0x3) - 1);
 
                         TNameEntryArray = getPtr(block + offset);
@@ -129,7 +135,7 @@ string GetFNameFromID(uint32 index) {
                 if (blockSlice) {
                     kaddr block = getPtr(blockSlice + 0x8);
 
-                    uint32 shift = Read<uint32>(blockSlice);
+                    auto shift = Read<uint32>(blockSlice);
                     uint32 offset = (Offsets::PointerSize * 2) * (((shift - 0x64) / 0x3) - 1);
 
                     TNameEntryArray = getPtr(block + offset);
@@ -145,13 +151,13 @@ string GetFNameFromID(uint32 index) {
             }
         }
 
-        gotGName:
+gotGName:
         kaddr FNameEntryArr = getPtr(
                 TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
         kaddr FNameEntry = getPtr(
                 FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
 
-        return ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE);
+        return ReadStr(FNameEntry + Offsets::FNameEntryToNameString, 64);
     }
 }
 
@@ -163,7 +169,7 @@ DumpBlocks423(ofstream &gname, uint32 &count, kaddr FNamePool, uint32 blockId, u
     uint16 Offset = 0;
     while (It < End) {
         kaddr FNameEntry = It;
-        int16 FNameEntryHeader = Read<int16>(FNameEntry);
+        auto FNameEntryHeader = Read<int16>(FNameEntry);
         int StrLength = FNameEntryHeader >> Offsets::FNameEntryToLenBit;
         if (StrLength) {
             bool wide = FNameEntryHeader & 1;
@@ -179,7 +185,7 @@ DumpBlocks423(ofstream &gname, uint32 &count, kaddr FNamePool, uint32 blockId, u
                     if (wide) {
                         str = WideStr::getString(StrPtr, StrLength);
                     } else {
-                        str = ReadStr2(StrPtr, StrLength);
+                        str = ReadStr(StrPtr, StrLength);
                     }
 
                     if (isVerbose) {
@@ -193,7 +199,7 @@ DumpBlocks423(ofstream &gname, uint32 &count, kaddr FNamePool, uint32 blockId, u
                     count++;
                 }
             } else {
-                StrLength = -StrLength;//Negative lengths are for Unicode Characters
+                StrLength = -StrLength;
             }
 
             //Next
@@ -207,7 +213,7 @@ DumpBlocks423(ofstream &gname, uint32 &count, kaddr FNamePool, uint32 blockId, u
     }
 }
 
-void DumpStrings(string out) {
+void DumpStrings(const string& out) {
     uint32 count = 0;
     ofstream gname(out + "/Strings.txt", ofstream::out);
     if (gname.is_open()) {
@@ -217,8 +223,8 @@ void DumpStrings(string out) {
             kaddr FNamePool = getRealOffset(Offsets::GNames) + Offsets::GNamesToFNamePool;
 
             uint32 BlockSize = Offsets::FNameStride * 65536;
-            uint32 CurrentBlock = Read<uint32>(FNamePool + Offsets::FNamePoolToCurrentBlock);
-            uint32 CurrentByteCursor = Read<uint32>(
+            auto CurrentBlock = Read<uint32>(FNamePool + Offsets::FNamePoolToCurrentBlock);
+            auto CurrentByteCursor = Read<uint32>(
                     FNamePool + Offsets::FNamePoolToCurrentByteCursor);
 
             //All Blocks Except Current
@@ -245,6 +251,99 @@ void DumpStrings(string out) {
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         cout << count << " Strings Dumped in " << elapsed_secs << "S" << endl;
     }
+
+// uint32 index = 2;
+//
+// kaddr TNameEntryArray = getPtr(getRealOffset(Offsets::GNames));
+// printf("TNameEntryArray: %llx\n", (uint64) TNameEntryArray);
+//
+// HexDump(TNameEntryArray, 10);
+//
+// kaddr FNameEntryArr = getPtr(TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
+// printf("FNameEntryArr: %llx\n", (uint64) FNameEntryArr);
+//
+// HexDump(FNameEntryArr, 10);
+//
+// kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
+// printf("FNameEntry: %llx\n", (uint64) FNameEntry);
+//
+// HexDump(FNameEntry, 10);
+//
+// printf("Name: %s", ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE).c_str());
+
+//    uint32 modeSel = Read<uint32>(getRealOffset(Offsets::PGLEncSelect));
+//    printf("ModeSel: %x\n\n", modeSel);
+//
+//    if(modeSel) {
+//        printf("XOR Pointer Method:-\n");
+//
+//        kaddr blockSlice = getPtr(getRealOffset(Offsets::PGLBlockSlice1));
+//        printf("BlockSlice: %lx\n", blockSlice);
+//
+//        if(blockSlice){
+//            kaddr block = getPtr(blockSlice + (Offsets::PointerSize * 5));
+//            printf("Block: %lx\n", block);
+//
+//            uint8 shift = Read<uint8>(getRealOffset(Offsets::PGLBlockShift));
+//            printf("Shift: %d\n", shift);
+//
+//            kaddr offset = Offsets::PointerSize * (shift + 5);
+//            printf("Offset: %lx\n", offset);
+//
+//            kaddr encGName = getPtr(block + offset);
+//            printf("EncGName: %lx\n", encGName);
+//
+//            int index = 1;
+//
+//#if defined(__LP64__)
+//            kaddr TNameEntryArray = encGName ^ 0x7878787878787878;
+//#else
+//            kaddr TNameEntryArray = encGName ^ 0x78787878;
+//#endif
+//
+//            kaddr FNameEntryArr = getPtr(TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
+//            kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
+//
+//            printf("\nTNameEntryArray: %lx\n", TNameEntryArray);
+//            printf("FNameEntryArr: %lx\n", FNameEntryArr);
+//            printf("FNameEntry: %lx\n", FNameEntry);
+//
+//            string s = ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE);
+//
+//            printf("ReadStr: %s\n", s.c_str());
+//        }
+//    } else {
+//        printf("NOP Chain Method:-\n");
+//
+//        kaddr blockSlice = getRealOffset(Offsets::PGLBlockSlice2);
+//        printf("BlockSlice: %lx\n", blockSlice);
+//
+//        if(Read<int>(blockSlice + 0x4)){
+//            kaddr block = getPtr(blockSlice + 0x8);
+//            printf("Block: %lx\n", block);
+//
+//            uint32 shift = Read<uint32>(blockSlice);
+//            printf("Shift: %x\n", shift);
+//
+//            uint32 offset = (Offsets::PointerSize * 2) * (((shift - 0x64) / 0x3) - 1);
+//            printf("Offset: %x\n", offset);
+//
+//            int index = 1;
+//
+//            kaddr TNameEntryArray = getPtr(block + offset);
+//
+//            kaddr FNameEntryArr = getPtr(TNameEntryArray + ((index / 0x4000) * Offsets::PointerSize));
+//            kaddr FNameEntry = getPtr(FNameEntryArr + ((index % 0x4000) * Offsets::PointerSize));
+//
+//            printf("\nTNameEntryArray: %lx\n", TNameEntryArray);
+//            printf("FNameEntryArr: %lx\n", FNameEntryArr);
+//            printf("FNameEntry: %lx\n", FNameEntry);
+//
+//            string s = ReadStr(FNameEntry + Offsets::FNameEntryToNameString, MAX_SIZE);
+//
+//            printf("ReadStr: %s\n", s.c_str());
+//        }
+//    }
 }
 
 #endif

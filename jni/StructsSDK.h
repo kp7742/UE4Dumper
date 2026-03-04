@@ -7,7 +7,6 @@ using namespace std;
 
 //--------------SDK-----------------//
 
-// Reversed engineered from NS
 struct XigPtrProperty {
     //InternalIndex
     static int32 getInt32Dec(kaddr addr, kaddr e1 = 0x0, kaddr e2 = 0x4, kaddr e3 = 0x8) {
@@ -24,17 +23,16 @@ struct XigPtrProperty {
 };
 
 struct UWorld {
-    // There might be better way :P
-    static kaddr ExtAddr(kaddr addr, kaddr shift) {
+    static kaddr ExtAddr(kaddr addr, kaddr shift){
 #if defined(__LP64__)
-        return (kaddr) getUInt8(addr + getUInt8(addr + shift)) |
-               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x4)) << 8) |
-               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x8)) << 16) |
-               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0xC)) << 24) |
-               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x10)) << 32) |
-               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x14)) << 40) |
-               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x18)) << 48) |
-               ((kaddr) getUInt8(addr + getUInt8(addr + shift + 0x20)) << 56);
+        return (kaddr)getUInt8(addr + getUInt8(addr + shift)) |
+               ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x4)) << 8) |
+               ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x8)) << 16) |
+               ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0xC)) << 24) |
+               ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x10)) << 32) |
+               ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x14)) << 40) |
+               ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x18)) << 48) |
+               ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x1C)) << 56);
 #else
         return (kaddr)getUInt8(addr + getUInt8(addr + shift)) |
             ((kaddr)getUInt8(addr + getUInt8(addr + shift + 0x4)) << 8) |
@@ -43,8 +41,8 @@ struct UWorld {
 #endif
     }
 
-    static kaddr getGWorld() {
-        if (isPtrDec && isPUBGSeries() && !isPGLite) {
+    static kaddr getGWorld(){
+        if(isPtrDec && !isPGLite && !isPUBGCN){
             return ExtAddr(getPtr(getRealOffset(Offsets::GWorld)), 0x80);
         }
         return getRealOffset(Offsets::GWorld);
@@ -53,14 +51,14 @@ struct UWorld {
 
 struct UObject {
     static int32 getIndex(kaddr object) {
-        if (isPtrDec && isPUBGNS) {
+        if(isPUBGNS){
             return XigPtrProperty::getInt32Dec(object + Offsets::UObjectToInternalIndex);
         }
         return Read<int32>(object + Offsets::UObjectToInternalIndex);
     }
 
     static kaddr getClass(kaddr object) {//UClass*
-        if (isPtrDec && isPUBGNS) {
+        if(isPUBGNS){
             return XigPtrProperty::getPointerDec(object + Offsets::UObjectToClassPrivate);
         }
         return getPtr(object + Offsets::UObjectToClassPrivate);
@@ -71,7 +69,7 @@ struct UObject {
     }
 
     static kaddr getOuter(kaddr object) {//UObject*
-        if (isPtrDec && isPUBGNS) {
+        if(isPUBGNS){
             return XigPtrProperty::getPointerDec(object + Offsets::UObjectToOuterPrivate);
         }
         return getPtr(object + Offsets::UObjectToOuterPrivate);
@@ -168,6 +166,10 @@ struct UFunction {
 };
 
 struct UProperty {
+    static int32 getArrayDim(kaddr prop) {
+        return Read<int32>(prop + 0x34);
+    }
+
     static int32 getElementSize(kaddr prop) {
         return Read<int32>(prop + Offsets::UPropertyToElementSize);
     }

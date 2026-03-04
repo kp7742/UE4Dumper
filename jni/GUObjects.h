@@ -30,8 +30,7 @@ kaddr GetUObjectFromID(uint32 index) {
                 getRealOffset(Offsets::GUObjectArray) + Offsets::FUObjectArrayToTUObjectArray);
         kaddr Chunk = getPtr(TUObjectArray + ((index / 0x10000) * Offsets::PointerSize));
 
-        return getPtr(Chunk + Offsets::FUObjectItemPadd +
-                      ((index % 0x10000) * Offsets::FUObjectItemSize));
+        return getPtr(Chunk + Offsets::FUObjectItemPadd + ((index % 0x10000) * Offsets::FUObjectItemSize));
     } else {
         kaddr FUObjectArray;
         if (deRefGUObjectArray) {
@@ -45,7 +44,7 @@ kaddr GetUObjectFromID(uint32 index) {
     }
 }
 
-void DumpObjects(string out) {
+void DumpObjects(const string& out) {
     uint32 count = 0;
     ofstream obj(out + "/Objects.txt", ofstream::out);
     if (obj.is_open()) {
@@ -53,7 +52,7 @@ void DumpObjects(string out) {
         clock_t begin = clock();
         int32 ocount = GetObjectCount();
         cout << "Objects Counts: " << setbase(10) << ocount << endl;
-        if (ocount < 10 || ocount > 999999) {
+        if(ocount < 10 || ocount > 999999){
             ocount = 300000;
         }
         for (int32 i = 0; i < ocount; i++) {
@@ -76,6 +75,32 @@ void DumpObjects(string out) {
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         cout << setbase(10) << count << " Valid Objects Dumped in " << elapsed_secs << "S" << endl;
     }
+
+   // uint32 index = 1;
+   //
+   // int32 objCount = Read<int32>(getRealOffset(Offsets::GUObjectArray) +
+   //                              Offsets::FUObjectArrayToTUObjectArray +
+   //                              Offsets::TUObjectArrayToNumElements);
+   //
+   // cout << "Objects Count: " << objCount << endl;
+   //
+   // kaddr FUObjectArray = getRealOffset(Offsets::GUObjectArray) + Offsets::FUObjectArrayToTUObjectArray;
+   //
+   // HexDump(FUObjectArray, 40);
+   //
+   // kaddr TUObjectArray = getPtr(FUObjectArray);
+   //
+   // HexDump(TUObjectArray, 10);
+   //
+   // kaddr Chunk = getPtr(TUObjectArray + ((index / 0x10000) * Offsets::PointerSize));
+   //
+   // HexDump(Chunk, 10);
+   //
+   // kaddr Obj = getPtr(Chunk + Offsets::FUObjectItemPadd + ((index % 0x10000) * Offsets::FUObjectItemSize));
+   //
+   // HexDump(Obj, 10);
+   //
+   // cout << "Name: " << UObject::getName(Obj).c_str() << endl;
 }
 
 #endif

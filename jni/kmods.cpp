@@ -29,7 +29,7 @@ const struct option long_options[] = {
 };
 
 void Usage() {
-    printf("UE4Dumper v0.20 <==> Made By KMODs(kp7742)\n");
+    printf("UE4Dumper v0.21 <==> Made By KMODs(kp7742)\n");
     printf("Usage: ./ue4dumper <option(s)>\n");
     printf("Dump Lib libUE4.so from Memory of Game Process and Generate structure SDK for UE4 Engine\n");
     printf("Tested on PUBG Mobile Series and Other UE4 Based Games\n");
@@ -64,7 +64,7 @@ void Usage() {
     printf("  --derefgname(Optional) <true/false> De-Reference GNames Address(Default: true)\n");
     printf("  --derefguobj(Optional) <true/false> De-Reference GUObject Address(Default: false)\n");
     printf("  --package <packageName>             Package Name of App(Default: com.tencent.ig)\n");
-    printf("  --output <outputPath>               File Output path(Default: /sdcard)\n");
+    printf("  --output <outputPath>               File Output path\n");
     printf("  --help                              Display this information\n");
 }
 
@@ -78,7 +78,7 @@ kaddr getHexAddr(const char *addr) {
 
 int main(int argc, char *argv[]) {
     int c;
-    string outputpath("/sdcard");
+    string outputpath(".");
     bool isValidArg = true,
             isLibDump = false,
             isFastDump = false,
@@ -166,6 +166,7 @@ int main(int argc, char *argv[]) {
 #endif
 
     isPGLite = isPUBGLite();
+    isPUBGCN = isGameOfPeace();
     isPUBGNS = isPUBGNewState();
 
     if (!isValidArg ||
@@ -349,9 +350,3 @@ int main(int argc, char *argv[]) {
     }
     return 0;
 }
-
-
-
-
-
-

@@ -2,13 +2,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_CPPFLAGS += -pie -fPIE -ffunction-sections -fdata-sections -fvisibility=hidden
-LOCAL_LDFLAGS += -pie -fPIE -Wl,--gc-sections
-LOCAL_CFLAGS := -Wno-error=format-security -fpermissive
-LOCAL_CFLAGS += -ffunction-sections -fdata-sections -fvisibility=hidden
-LOCAL_CFLAGS += -fno-rtti -fno-exceptions
-LOCAL_CFLAGS += -DNDEBUG
-
 ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
     LOCAL_MODULE := ue4dumper64
 
@@ -32,7 +25,11 @@ ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
 
 endif
 
-LOCAL_LDLIBS += -L$(SYSROOT)/usr/lib -lz -llog
+LOCAL_CFLAGS += -Os -ffunction-sections -fdata-sections -fvisibility=hidden -fvisibility-inlines-hidden
+LOCAL_CPPFLAGS += -Os -ffunction-sections -fdata-sections -fvisibility=hidden -fvisibility-inlines-hidden
+LOCAL_LDFLAGS += -Wl,--gc-sections
+
+LOCAL_LDLIBS += -llog
 
 include $(BUILD_EXECUTABLE)
 
